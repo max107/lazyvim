@@ -295,19 +295,46 @@ augroup END
         dependencies = {
             -- LSP Support
             { 'neovim/nvim-lspconfig' }, -- Required
-            {
-                -- Optional
-                'williamboman/mason.nvim',
-                build = function()
-                    pcall(vim.cmd, 'MasonUpdate')
-                end,
-            },
-            { 'williamboman/mason-lspconfig.nvim' }, -- Optional
-
             -- Autocompletion
-            { 'hrsh7th/nvim-cmp' },     -- Required
-            { 'hrsh7th/cmp-nvim-lsp' }, -- Required
-            { 'L3MON4D3/LuaSnip' },     -- Required
+            { 'hrsh7th/nvim-cmp' },      -- Required
+            { 'hrsh7th/cmp-nvim-lsp' },  -- Required
+            { 'L3MON4D3/LuaSnip' },      -- Required
+        },
+    },
+    {
+        -- Optional
+        'williamboman/mason-lspconfig.nvim',
+        config = function()
+            require('mason').setup()
+            require("mason-lspconfig").setup({
+                ensure_installed = {
+                    "bashls",
+                    "tsserver",
+                    "eslint",
+                    "astro",
+                    "dockerls",
+                    "docker_compose_language_service",
+                    "gopls",
+                    "graphql",
+                    "html",
+                    "helm_ls",
+                    "jsonls",
+                    "intelephense",
+                    "ruff_lsp",
+                    -- "pyright",
+                    "sqlls",
+                    "terraformls",
+                    "volar",
+                    "vuels",
+                    "yamlls",
+                    "lemminx",
+                    -- "tflint",
+                },
+                automatic_installation = true,
+            })
+        end,
+        dependencies = {
+            'williamboman/mason.nvim',
         },
     },
     {
