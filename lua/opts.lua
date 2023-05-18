@@ -1,3 +1,5 @@
+-- map leader to <Space>
+vim.keymap.set("n", " ", "<Nop>", { silent = true, remap = false })
 vim.g.mapleader = " "
 
 vim.scriptencoding = "utf-8"
@@ -170,3 +172,5 @@ api.nvim_create_autocmd(
     "BufReadPost",
     { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
 )
+
+vim.keymap.set("n", "<leader>cc", ':lua for _, win in ipairs(vim.api.nvim_list_wins()) do local config = vim.api.nvim_win_get_config(win); if config.relative ~= "" then vim.api.nvim_win_close(win, false); print("Closing window", win) end end<CR>', { remap = false })

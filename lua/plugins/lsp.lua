@@ -328,6 +328,8 @@ augroup END
                     "vuels",
                     "yamlls",
                     "lemminx",
+                    "cssls",
+                    -- "cssmodules_ls",
                     -- "tflint",
                 },
                 automatic_installation = true,
