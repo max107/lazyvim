@@ -16,15 +16,15 @@ return {
         config = function()
             require('nightfox').setup({
                 options = {
-                    transparent = false,
+                    transparent = true,
                     terminal_colors = true,
                 },
                 palettes = {},
                 specs = {},
                 groups = {},
             })
-            -- vim.cmd([[ colorscheme nightfox ]])
-            vim.cmd([[ colorscheme dayfox ]])
+            vim.cmd([[ colorscheme nightfox ]])
+            -- vim.cmd([[ colorscheme dayfox ]])
             -- vim.cmd([[ colorscheme terafox ]])
         end,
     }
