@@ -25,7 +25,6 @@ return {
             })
             vim.cmd([[ colorscheme nightfox ]])
             -- vim.cmd([[ colorscheme dayfox ]])
-            -- vim.cmd([[ colorscheme terafox ]])
         end,
     }
 }
