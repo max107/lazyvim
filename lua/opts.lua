@@ -1,5 +1,4 @@
-vim.g.mapleader = "\\"
--- vim.g.mapleader = " "
+vim.g.mapleader = " "
 
 vim.scriptencoding = "utf-8"
 vim.opt.encoding = "utf-8"
@@ -33,7 +32,7 @@ vim.opt.viewoptions = "folds,cursor,curdir,slash,unix"
 vim.opt.sessionoptions = "curdir,help,tabpages,winsize"
 vim.opt.wildignorecase = true
 vim.opt.wildignore =
-	".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/vendor/**,**/bower_modules/**"
+".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/vendor/**,**/bower_modules/**"
 vim.opt.backup = false
 vim.opt.writebackup = false
 vim.opt.swapfile = false
@@ -107,7 +106,7 @@ vim.opt.breakindentopt = "shift:2,min:20"
 vim.opt.wrap = false
 vim.opt.relativenumber = true -- Show line number
 -- vim.opt.linebreak = true
-vim.opt.linebreak = false -- Wrap on word boundary
+vim.opt.linebreak = false     -- Wrap on word boundary
 vim.opt.number = true
 vim.opt.colorcolumn = "80"
 vim.opt.foldenable = true
@@ -119,46 +118,45 @@ vim.opt.showmatch = true -- Highlight matching parenthesis
 vim.opt.clipboard = "unnamedplus"
 
 if vim.loop.os_uname().sysname == "Darwin" then
-	vim.g.clipboard = {
-		name = "macOS-clipboard",
-		copy = {
-			["+"] = "pbcopy",
-			["*"] = "pbcopy",
-		},
-		paste = {
-			["+"] = "pbpaste",
-			["*"] = "pbpaste",
-		},
-		cache_enabled = 0,
-	}
-	vim.g.python_host_prog = "/usr/bin/python"
-	vim.g.python3_host_prog = "/usr/local/bin/python3"
+    vim.g.clipboard = {
+        name = "macOS-clipboard",
+        copy = {
+            ["+"] = "pbcopy",
+            ["*"] = "pbcopy",
+        },
+        paste = {
+            ["+"] = "pbpaste",
+            ["*"] = "pbpaste",
+        },
+        cache_enabled = 0,
+    }
+    vim.g.python_host_prog = "/usr/bin/python"
+    vim.g.python3_host_prog = "/usr/local/bin/python3"
 end
 
 -- Undercurl
 vim.cmd([[let &t_Cs = "\e[4:3m"]])
 vim.cmd([[let &t_Ce = "\e[4:0m"]])
 
-
 local api = vim.api
 
 -- Highlight on yank
 local yankGrp = api.nvim_create_augroup("YankHighlight", { clear = true })
 api.nvim_create_autocmd("TextYankPost", {
-	command = "silent! lua vim.highlight.on_yank({higroup='IncSearch', timeout=100})",
-	group = yankGrp,
+    command = "silent! lua vim.highlight.on_yank({higroup='IncSearch', timeout=100})",
+    group = yankGrp,
 })
 
 -- show cursor line only in active window
 local cursorGrp = api.nvim_create_augroup("CursorLine", { clear = true })
 api.nvim_create_autocmd({ "InsertLeave", "WinEnter" }, {
-	pattern = "*",
-	command = "set cursorline",
-	group = cursorGrp,
+    pattern = "*",
+    command = "set cursorline",
+    group = cursorGrp,
 })
 api.nvim_create_autocmd(
-	{ "InsertEnter", "WinLeave" },
-	{ pattern = "*", command = "set nocursorline", group = cursorGrp }
+    { "InsertEnter", "WinLeave" },
+    { pattern = "*", command = "set nocursorline", group = cursorGrp }
 )
 
 -- Remove whitespace on save
@@ -169,7 +167,6 @@ api.nvim_create_autocmd("BufEnter", { command = [[set fo-=c fo-=r fo-=o]] })
 
 -- go to last loc when opening a buffer
 api.nvim_create_autocmd(
-	"BufReadPost",
-	{ command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
+    "BufReadPost",
+    { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
 )
-

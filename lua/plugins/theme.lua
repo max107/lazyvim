@@ -1,14 +1,31 @@
 return {
+    -- {
+    --     "sainnhe/sonokai",
+    --     config = function()
+    --         vim.cmd([[ colorscheme sonokai ]])
+    --     end,
+    -- },
+    -- {
+    --     "savq/melange-nvim",
+    --     config = function()
+    --         vim.cmd([[ colorscheme melange ]])
+    --     end,
+    -- },
     {
-        "sainnhe/sonokai",
+        "EdenEast/nightfox.nvim",
         config = function()
-            vim.cmd([[ colorscheme sonokai ]])
-
-            -- remove background
-            -- vim.cmd([[
-            --   au ColorScheme * hi Normal ctermbg=none guibg=none
-            --   au ColorScheme myspecialcolors hi Normal ctermbg=red guibg=red
-            -- ]])
+            require('nightfox').setup({
+                options = {
+                    transparent = false,
+                    terminal_colors = true,
+                },
+                palettes = {},
+                specs = {},
+                groups = {},
+            })
+            -- vim.cmd([[ colorscheme nightfox ]])
+            vim.cmd([[ colorscheme dayfox ]])
+            -- vim.cmd([[ colorscheme terafox ]])
         end,
     }
 }

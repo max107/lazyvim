@@ -245,7 +245,8 @@ return {
             local opts = { noremap = true, silent = true }
 
             -- vim.api.nvim_set_keymap("n", "<F2>", "<cmd>NeoTreeFocusToggle<CR>", opts)
-            -- vim.api.nvim_set_keymap("n", "<F3>", "<cmd>Neotree reveal<CR>", opts)
+            vim.api.nvim_set_keymap("n", "<leader>fr", "<cmd>Neotree reveal<CR>", opts)
+            vim.api.nvim_set_keymap("n", "<leader>gs", "<cmd>Neotree git_status<CR>", opts)
             -- vim.api.nvim_set_keymap("n", "<F4>", "<cmd>Neotree buffers<CR>", opts)
         end
     }
