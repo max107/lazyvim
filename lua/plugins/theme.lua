@@ -12,19 +12,25 @@ return {
     --     end,
     -- },
     {
-        "EdenEast/nightfox.nvim",
+        "doums/darcula",
         config = function()
-            require('nightfox').setup({
-                options = {
-                    transparent = true,
-                    terminal_colors = true,
-                },
-                palettes = {},
-                specs = {},
-                groups = {},
-            })
-            vim.cmd([[ colorscheme nightfox ]])
-            -- vim.cmd([[ colorscheme dayfox ]])
+            vim.cmd([[ colorscheme darcula ]])
         end,
-    }
+    },
+    -- {
+    --     "EdenEast/nightfox.nvim",
+    --     config = function()
+    --         require('nightfox').setup({
+    --             options = {
+    --                 transparent = false,
+    --                 terminal_colors = true,
+    --             },
+    --             palettes = {},
+    --             specs = {},
+    --             groups = {},
+    --         })
+    --         vim.cmd([[ colorscheme carbonfox ]])
+    --         -- vim.cmd([[ colorscheme dayfox ]])
+    --     end,
+    -- }
 }

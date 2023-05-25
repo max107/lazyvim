@@ -37,7 +37,7 @@ return {
                         enable = true,
                     },
                     highlight_current_scope = {
-                        enable = true,
+                        enable = false,
                     },
                     smart_rename = {
                         enable = true,
@@ -308,7 +308,6 @@ augroup END
             require('mason').setup()
             require("mason-lspconfig").setup({
                 ensure_installed = {
-                    "bashls",
                     "tsserver",
                     "eslint",
                     "astro",
@@ -326,7 +325,6 @@ augroup END
                     "terraformls",
                     "volar",
                     "vuels",
-                    "yamlls",
                     "lemminx",
                     "cssls",
                     -- "cssmodules_ls",
