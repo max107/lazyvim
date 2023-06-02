@@ -12,11 +12,11 @@ return {
     --     end,
     -- },
     {
-        "doums/darcula",
+        "ribru17/bamboo.nvim",
         config = function()
-            vim.cmd([[ colorscheme darcula ]])
+            vim.cmd([[ colorscheme bamboo ]])
         end,
-    },
+    }
     -- {
     --     "EdenEast/nightfox.nvim",
     --     config = function()
