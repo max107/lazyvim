@@ -248,6 +248,7 @@ augroup END
                     timeout_ms = 10000,
                 },
                 servers = {
+                    ['gopls'] = { 'go' },
                     ['lua_ls'] = { 'lua' },
                     ['rust_analyzer'] = { 'rust' },
                 }
