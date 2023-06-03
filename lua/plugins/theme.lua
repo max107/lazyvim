@@ -16,7 +16,7 @@ return {
     --     config = function()
     --         require('nightfox').setup({
     --             options = {
-    --                 transparent = true,
+    --                 transparent = false,
     --                 terminal_colors = true,
     --             },
     --             palettes = {},
