@@ -62,7 +62,6 @@ return {
                 },
                 highlight = {
                     enable = true,
-                    additional_vim_regex_highlighting = false,
                     disable = {},
                 },
                 indent = {
@@ -86,6 +85,7 @@ return {
                     "html",
                     "javascript",
                     "go",
+                    "terraform",
                     "fish",
                     "dockerfile",
                     "rust",
