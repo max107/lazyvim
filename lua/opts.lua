@@ -6,7 +6,7 @@ vim.scriptencoding = "utf-8"
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
 
-vim.opt.lazyredraw = true -- Faster scrolling
+-- vim.opt.lazyredraw = true -- Faster scrolling
 vim.opt.cursorline = true
 vim.opt.title = true
 vim.opt.smartindent = true
@@ -173,4 +173,6 @@ api.nvim_create_autocmd(
     { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
 )
 
-vim.keymap.set("n", "<leader>cc", ':lua for _, win in ipairs(vim.api.nvim_list_wins()) do local config = vim.api.nvim_win_get_config(win); if config.relative ~= "" then vim.api.nvim_win_close(win, false); print("Closing window", win) end end<CR>', { remap = false })
+vim.keymap.set("n", "<leader>cc",
+    ':lua for _, win in ipairs(vim.api.nvim_list_wins()) do local config = vim.api.nvim_win_get_config(win); if config.relative ~= "" then vim.api.nvim_win_close(win, false); print("Closing window", win) end end<CR>',
+    { remap = false })
