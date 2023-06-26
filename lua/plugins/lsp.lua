@@ -236,6 +236,22 @@ augroup END
 
             -- (Optional) Configure lua language server for neovim
             require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
+            require('lspconfig').jsonls.setup {
+                settings = {
+                    json = {
+                        schemas = require('schemastore').json.schemas(),
+                        validate = { enable = true },
+                    },
+                },
+            }
+            require('lspconfig').yamlls.setup {
+                settings = {
+                    yaml = {
+                        schemas = require('schemastore').yaml.schemas(),
+                        validate = { enable = true },
+                    },
+                },
+            }
 
             lsp.setup({
                 set_lsp_keymaps = {
@@ -300,6 +316,7 @@ augroup END
             { 'hrsh7th/nvim-cmp' },      -- Required
             { 'hrsh7th/cmp-nvim-lsp' },  -- Required
             { 'L3MON4D3/LuaSnip' },      -- Required
+            { 'b0o/schemastore.nvim' }
         },
     },
     {
