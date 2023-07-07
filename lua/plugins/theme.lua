@@ -1,22 +1,22 @@
 return {
-    -- {
-    --     "sainnhe/sonokai",
-    --     config = function()
-    --         vim.cmd([[ colorscheme sonokai ]])
-    --     end,
-    -- },
+    {
+        "sainnhe/sonokai",
+        config = function()
+            vim.cmd([[ colorscheme sonokai ]])
+        end,
+    },
     -- {
     --     "savq/melange-nvim",
     --     config = function()
     --         vim.cmd([[ colorscheme melange ]])
     --     end,
     -- },
-    {
-        "ribru17/bamboo.nvim",
-        config = function()
-            vim.cmd([[ colorscheme bamboo ]])
-        end,
-    }
+    -- {
+    --     "ribru17/bamboo.nvim",
+    --     config = function()
+    --         vim.cmd([[ colorscheme bamboo ]])
+    --     end,
+    -- }
     -- {
     --     "EdenEast/nightfox.nvim",
     --     config = function()

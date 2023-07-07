@@ -19,6 +19,10 @@ return {
             local cmp_action = require('lsp-zero.cmp').action()
 
             cmp.setup({
+                window = {
+                    completion = cmp.config.window.bordered(),
+                    documentation = cmp.config.window.bordered(),
+                },
                 -- preselect first item in autocomplete
                 -- preselect = 'item',
                 -- completion = {
