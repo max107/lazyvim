@@ -1,18 +1,12 @@
 return {
     {
-        "lukas-reineke/indent-blankline.nvim",
-        opts = {
-            char = "»",
-            show_trailing_blankline_indent = false,
-        },
-    },
-    {
         "nvim-lualine/lualine.nvim",
         opts = {
             options = {
-                icons_enabled = false,
+                icons_enabled = true,
                 component_separators = "|",
                 section_separators = "",
+                disabled_filetypes = { 'packer', 'neo-tree' },
             },
             sections = {
                 lualine_c = {
@@ -45,14 +39,6 @@ return {
                 changedelete = { text = "~" },
             },
         },
-    },
-    {
-        'akinsho/bufferline.nvim',
-        version = "*",
-        dependencies = 'nvim-tree/nvim-web-devicons',
-        config = function()
-            require("bufferline").setup {}
-        end
     },
     {
         'echasnovski/mini.pairs',
