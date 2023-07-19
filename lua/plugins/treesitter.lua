@@ -70,6 +70,7 @@ return {
                     "lua",
                     "comment",
                     "json",
+                    "astro",
                     "php",
                     "typescript",
                     "vue",
