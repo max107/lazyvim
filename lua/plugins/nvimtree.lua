@@ -18,7 +18,7 @@ return {
                 view = {
                     adaptive_size = false,
                     side = "left",
-                    width = 30,
+                    width = 25,
                     preserve_window_proportions = true,
                 },
                 git = {
@@ -28,8 +28,14 @@ return {
                 filesystem_watchers = {
                     enable = true,
                 },
+                modified = {
+                    enable = true,
+                    show_on_dirs = true,
+                    show_on_open_dirs = true,
+                },
                 actions = {
                     open_file = {
+                        quit_on_open = false,
                         resize_window = true,
                     },
                 },
@@ -77,6 +83,7 @@ return {
             local opts = { noremap = true, silent = true }
 
             vim.api.nvim_set_keymap("n", "<leader>fr", "<cmd>NvimTreeFindFile<CR>", opts)
+            vim.api.nvim_set_keymap("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", opts)
         end
     }
 }

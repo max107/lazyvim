@@ -17,4 +17,9 @@ require("lazy").setup("plugins", {
         enabled = false,
         notify = false,
     },
+    ui = {
+        border = "single",
+        title = "Lazy",
+        title_pos = "left"
+    }
 })

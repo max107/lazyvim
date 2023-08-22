@@ -1,36 +1,18 @@
 return {
     {
-        "sainnhe/sonokai",
+        "catppuccin/nvim",
+        name = "catppuccin",
+        priority = 1000,
         config = function()
-            vim.cmd([[ colorscheme sonokai ]])
+            require("catppuccin").setup({
+                flavour = "mocha",
+                background = {
+                    light = "latte",
+                    dark = "mocha",
+                },
+            })
+
+            vim.cmd.colorscheme "catppuccin"
         end,
     },
-    -- {
-    --     "savq/melange-nvim",
-    --     config = function()
-    --         vim.cmd([[ colorscheme melange ]])
-    --     end,
-    -- },
-    -- {
-    --     "ribru17/bamboo.nvim",
-    --     config = function()
-    --         vim.cmd([[ colorscheme bamboo ]])
-    --     end,
-    -- }
-    -- {
-    --     "EdenEast/nightfox.nvim",
-    --     config = function()
-    --         require('nightfox').setup({
-    --             options = {
-    --                 transparent = false,
-    --                 terminal_colors = true,
-    --             },
-    --             palettes = {},
-    --             specs = {},
-    --             groups = {},
-    --         })
-    --         vim.cmd([[ colorscheme nightfox ]])
-    --         -- vim.cmd([[ colorscheme dayfox ]])
-    --     end,
-    -- }
 }
