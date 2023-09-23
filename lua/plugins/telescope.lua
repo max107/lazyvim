@@ -12,8 +12,15 @@ return {
             -- You dont need to set any of these options. These are the default ones. Only
             -- the loading is important
             local telescope = require("telescope")
+            local actions = require("telescope.actions")
+
             telescope.setup({
                 defaults = {
+                    mappings = {
+                        i = {
+                            ["<esc>"] = actions.close,
+                        },
+                    },
                     -- prompt_position = "top",
                     -- sorting_strategy = "ascending",
                     file_ignore_patterns = {
