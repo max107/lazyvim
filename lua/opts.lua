@@ -185,3 +185,13 @@ api.nvim_create_autocmd({ "FileType" }, {
         vim.opt_local.expandtab = true
     end
 })
+
+
+-- Stay in indent mode
+local n_opts = { silent = true, noremap = true }
+-- Normal mode
+vim.keymap.set('n', '<', '<<', n_opts)
+vim.keymap.set('n', '>', '>>', n_opts)
+-- Visual --
+vim.keymap.set("v", "<", "<gv", n_opts)
+vim.keymap.set("v", ">", ">gv", n_opts)
