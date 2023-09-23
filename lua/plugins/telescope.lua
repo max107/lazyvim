@@ -71,13 +71,14 @@ return {
             -- load_extension, somewhere after setup function:
             telescope.load_extension("fzf")
 
+            local n_opts = { silent = true, noremap = true }
             local builtin = require("telescope.builtin")
-            vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
-            vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
-            -- vim.keymap.set("n", "<leader>fr", builtin.marks, {})
-            vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
-            vim.keymap.set("n", "<leader>fp", builtin.git_status, {})
-            vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find, {})
+            vim.keymap.set("n", "<leader>f", builtin.find_files, n_opts)
+            vim.keymap.set("n", "<leader>g", builtin.live_grep, n_opts)
+            -- vim.keymap.set("n", "<leader>fr", builtin.marks, n_opts)
+            vim.keymap.set("n", "<leader>b", builtin.buffers, n_opts)
+            vim.keymap.set("n", "<leader>p", builtin.git_status, n_opts)
+            vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find, n_opts)
         end
     },
 }

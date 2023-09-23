@@ -82,7 +82,7 @@ return {
 
             local opts = { noremap = true, silent = true }
 
-            vim.api.nvim_set_keymap("n", "<leader>fr", "<cmd>NvimTreeFindFile<CR>", opts)
+            vim.api.nvim_set_keymap("n", "<leader>rf", "<cmd>NvimTreeFindFile<CR>", opts)
             vim.api.nvim_set_keymap("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", opts)
         end
     }
