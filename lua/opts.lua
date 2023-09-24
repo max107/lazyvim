@@ -114,6 +114,9 @@ vim.opt.colorcolumn = "80"
 vim.opt.foldenable = true
 vim.opt.signcolumn = "yes"
 vim.opt.showmatch = true -- Highlight matching parenthesis
+-- vim.opt.statuscolumn = "%=%{v:relnum?v:relnum:v:lnum}%=%s"
+-- vim.opt.signcolumn = "yes:1"
+-- vim.opt.numberwidth = 4
 
 -- clipboard options
 -- vim.opt.clipboard = "unnamed"

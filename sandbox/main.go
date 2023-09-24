@@ -8,7 +8,7 @@ type Test struct {
 	A string
 }
 
-func testFn(a string) error {
+func testFn(a string, b bool) error {
 	return nil
 }
 
@@ -18,7 +18,7 @@ func main() {
 	var hello ITest
 	hello = Test{A: "Test"}
 
-	if err := testFn("test"); err != nil {
+	if err := testFn("test", false); err != nil {
 		panic(err)
 	}
 

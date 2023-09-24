@@ -2,12 +2,17 @@ return {
     -- LSP Support
     {
         'neovim/nvim-lspconfig',
-        opts = {
-            inlay_hints = { enabled = true },
-        },
+        cmd = 'LspInfo',
+        event = { 'BufReadPre', 'BufNewFile' },
         dependencies = {
             'hrsh7th/cmp-nvim-lsp',
-            'lvimuser/lsp-inlayhints.nvim'
+            'williamboman/mason-lspconfig.nvim',
+            {
+                'williamboman/mason.nvim',
+                build = function()
+                    pcall(vim.cmd, 'MasonUpdate')
+                end,
+            },
         },
     },
     {
@@ -19,26 +24,32 @@ return {
         },
         config = function()
             local lsp = require('lsp-zero').preset({})
+            lsp.setup({
+                inlay_hints = {
+                    enabled = false
+                },
+                set_lsp_keymaps = {
+                    preserve_mappings = false,
+                    omit = {},
+                },
+            })
 
-            local ih = require('lsp-inlayhints')
-            ih.setup()
+            local lspconfig = require('lspconfig')
+
+            lsp.set_server_config({
+                on_init = function(client)
+                    -- if this is not working, move to on_attach
+                    -- https://github.com/williamboman/mason-lspconfig.nvim/issues/211
+                    client.server_capabilities.semanticTokensProvider = nil
+                end,
+            })
 
             lsp.on_attach(function(client, bufnr)
                 lsp.default_keymaps({ buffer = bufnr })
             end)
 
-            -- require('lspconfig').lua_ls.setup({
-            --     on_attach = function(client, bufnr)
-            --         ih.on_attach(client, bufnr)
-            --     end,
-            --     settings = {
-            --         Lua = {
-            --             hint = {
-            --                 enable = true,
-            --             },
-            --         },
-            --     },
-            -- })
+            -- (Optional) Configure lua language server for neovim
+            lspconfig.lua_ls.setup(lsp.nvim_lua_ls())
 
             vim.api.nvim_create_autocmd('LspAttach', {
                 desc = 'LSP actions',
@@ -64,15 +75,6 @@ return {
                 end
             })
 
-            -- (Optional) Configure lua language server for neovim
-            require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
-
-            lsp.setup({
-                set_lsp_keymaps = {
-                    preserve_mappings = false,
-                    omit = {},
-                },
-            })
             lsp.format_on_save({
                 format_opts = {
                     timeout_ms = 10000,
@@ -90,12 +92,55 @@ return {
                 {
                     underline = true,
                     virtual_text = {
-                        spacing = 5,
+                        spacing = 3,
                         severity_limit = "Warning",
                     },
                     update_in_insert = true,
                 }
             )
         end
+    },
+    {
+        -- Optional
+        'williamboman/mason-lspconfig.nvim',
+        config = function()
+            local lsp_zero = require('lsp-zero')
+
+            require("mason-lspconfig").setup({
+                ensure_installed = {
+                    "tsserver",
+                    "astro",
+                    "dockerls",
+                    "docker_compose_language_service",
+                    "gopls",
+                    "html",
+                    "jsonls",
+                    "intelephense",
+                    "terraformls",
+                    "cssls",
+                },
+                -- automatic_installation = true,
+                handlers = {
+                    lsp_zero.default_setup,
+                }
+            })
+        end,
+        dependencies = {
+            {
+                "williamboman/mason.nvim",
+                build = ":MasonUpdate",
+                config = function()
+                    require("mason").setup({
+                        ui = {
+                            icons = {
+                                package_installed = "✓",
+                                package_pending = "➜",
+                                package_uninstalled = "✗"
+                            }
+                        }
+                    })
+                end
+            },
+        },
     },
 }

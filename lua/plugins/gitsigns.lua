@@ -2,7 +2,7 @@ return {
     {
         "lewis6991/gitsigns.nvim",
         opts = {
-            signs  = {
+            signs = {
                 add          = { text = '│' },
                 change       = { text = '│' },
                 delete       = { text = '_' },
@@ -10,7 +10,7 @@ return {
                 changedelete = { text = '~' },
                 untracked    = { text = '┆' },
             },
-            linehl = true,
+            -- linehl = true,
         },
     },
 }
