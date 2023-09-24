@@ -1,10 +1,44 @@
 return {
+    -- LSP Support
+    {
+        'neovim/nvim-lspconfig',
+        opts = {
+            inlay_hints = { enabled = true },
+        },
+        dependencies = {
+            'hrsh7th/cmp-nvim-lsp',
+            'lvimuser/lsp-inlayhints.nvim'
+        },
+    },
     {
         'VonHeikemen/lsp-zero.nvim',
-        branch = 'v2.x',
+        branch = 'v3.x',
         lazy = true,
+        dependencies = {
+            "neovim/nvim-lspconfig",
+        },
         config = function()
             local lsp = require('lsp-zero').preset({})
+
+            local ih = require('lsp-inlayhints')
+            ih.setup()
+
+            lsp.on_attach(function(client, bufnr)
+                lsp.default_keymaps({ buffer = bufnr })
+            end)
+
+            -- require('lspconfig').lua_ls.setup({
+            --     on_attach = function(client, bufnr)
+            --         ih.on_attach(client, bufnr)
+            --     end,
+            --     settings = {
+            --         Lua = {
+            --             hint = {
+            --                 enable = true,
+            --             },
+            --         },
+            --     },
+            -- })
 
             vim.api.nvim_create_autocmd('LspAttach', {
                 desc = 'LSP actions',

@@ -7,7 +7,11 @@ return {
             "nvim-treesitter/nvim-treesitter",
         },
         config = function()
-            require("go").setup()
+            require("go").setup({
+                lsp_inlay_hints = {
+                    enable = true
+                }
+            })
 
             vim.keymap.set("n", "<leader>tf", ":GoTestFile<CR>", { remap = false })
             vim.keymap.set("n", "<leader>tt", ":GoTestFunc<CR>", { remap = false })
