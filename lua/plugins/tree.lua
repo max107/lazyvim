@@ -7,7 +7,6 @@ return {
             "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
             "MunifTanjim/nui.nvim",
             {
-                -- only needed if you want to use the commands with "_with_window_picker" suffix
                 's1n7ax/nvim-window-picker',
                 version = '2.*',
                 config = function()
@@ -27,23 +26,6 @@ return {
                     })
                 end,
             },
-            -- {
-            --     "ten3roberts/window-picker.nvim",
-            --     name = "window-picker",
-            --     config = function()
-            --         local picker = require("window-picker")
-            --         picker.setup()
-            --         picker.pick_window = function()
-            --             return picker.select({ hl = "WindowPicker", prompt = "Pick window: " }, function(winid)
-            --                 if not winid then
-            --                     return nil
-            --                 else
-            --                     return winid
-            --                 end
-            --             end)
-            --         end
-            --     end,
-            -- },
         },
         config = function()
             -- disable netrw
@@ -52,13 +34,13 @@ return {
 
             -- If you want icons for diagnostic errors, you'll need to define them somewhere:
             vim.fn.sign_define("DiagnosticSignError",
-                { text = " ", texthl = "DiagnosticSignError" })
+                { text = "✗ ", texthl = "DiagnosticSignError" })
             vim.fn.sign_define("DiagnosticSignWarn",
-                { text = " ", texthl = "DiagnosticSignWarn" })
+                { text = "! ", texthl = "DiagnosticSignWarn" })
             vim.fn.sign_define("DiagnosticSignInfo",
-                { text = " ", texthl = "DiagnosticSignInfo" })
+                { text = "i ", texthl = "DiagnosticSignInfo" })
             vim.fn.sign_define("DiagnosticSignHint",
-                { text = "󰌵", texthl = "DiagnosticSignHint" })
+                { text = "", texthl = "DiagnosticSignHint" })
 
             require("neo-tree").setup({
                 source_selector = {
