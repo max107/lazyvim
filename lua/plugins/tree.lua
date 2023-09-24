@@ -61,6 +61,9 @@ return {
                 { text = "󰌵", texthl = "DiagnosticSignHint" })
 
             require("neo-tree").setup({
+                source_selector = {
+                    winbar = true,
+                },
                 close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
                 popup_border_style = "rounded",
                 enable_git_status = true,
@@ -296,7 +299,10 @@ return {
                 }
             })
 
-            vim.cmd([[nnoremap \ :Neotree reveal<cr>]])
+            local opts = { noremap = true, silent = true }
+
+            vim.api.nvim_set_keymap("n", "<C-n>", "<cmd>Neotree filesystem reveal toggle current<CR>", opts)
+            vim.api.nvim_set_keymap("n", "<C-g>", "<cmd>Neotree git_status toggle current<CR>", opts)
         end
     },
 }
