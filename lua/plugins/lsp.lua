@@ -82,6 +82,8 @@ return {
                 servers = {
                     -- ['terraformls'] = { 'tf' },
                     ['gopls'] = { 'go' },
+                    ['astro'] = { 'astro' },
+                    ['prettier'] = { 'scss' },
                     ['lua_ls'] = { 'lua' },
                     ['rust_analyzer'] = { 'rust' },
                 }

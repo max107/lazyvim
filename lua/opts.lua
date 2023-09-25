@@ -189,6 +189,14 @@ api.nvim_create_autocmd({ "FileType" }, {
     end
 })
 
+api.nvim_create_autocmd({ "FileType" }, {
+    pattern = "scss",
+    callback = function()
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.tabstop = 2
+        vim.opt_local.expandtab = true
+    end
+})
 
 -- Stay in indent mode
 local n_opts = { silent = true, noremap = true }
