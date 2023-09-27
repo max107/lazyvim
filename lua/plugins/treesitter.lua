@@ -5,18 +5,17 @@ return {
         -- build = ":TSUpdate",
         event = "BufWinEnter",
         dependencies = {
-            {
-                "p00f/nvim-ts-rainbow",
-            },
-            {
-                "nvim-treesitter/nvim-treesitter-refactor",
-            },
+            "p00f/nvim-ts-rainbow",
+            "nvim-treesitter/nvim-treesitter-refactor",
+            'JoosepAlviste/nvim-ts-context-commentstring',
             {
                 "windwp/nvim-ts-autotag",
                 event = "InsertEnter",
             },
         },
         config = function()
+            require('ts_context_commentstring').setup {}
+
             require("nvim-treesitter.configs").setup({
                 rainbow = {
                     enable = true,
@@ -54,9 +53,9 @@ return {
                         -- },
                     },
                 },
-                -- context_commentstring = {
-                --     enable = true,
-                -- },
+                context_commentstring = {
+                    enable = true,
+                },
                 highlight = {
                     enable = true,
                     disable = {},
