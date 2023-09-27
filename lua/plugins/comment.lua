@@ -24,14 +24,6 @@ return {
                     require("ts_context_commentstring.internal").update_commentstring({})
                 end,
             })
-
-            vim.cmd([[
-augroup set-commentstring-ag
-autocmd!
-autocmd BufEnter *.fish :lua vim.api.nvim_buf_set_option(0, "commentstring", "# %s")
-autocmd BufFilePost *.fish :lua vim.api.nvim_buf_set_option(0, "commentstring", "# %s")
-augroup END
-]])
         end
     },
 }
