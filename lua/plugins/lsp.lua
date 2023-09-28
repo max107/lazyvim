@@ -46,6 +46,7 @@ return {
 
             lsp.on_attach(function(client, bufnr)
                 lsp.default_keymaps({ buffer = bufnr })
+                lsp.buffer_autoformat()
             end)
 
             -- (Optional) Configure lua language server for neovim
@@ -75,19 +76,19 @@ return {
                 end
             })
 
-            lsp.format_on_save({
-                format_opts = {
-                    timeout_ms = 10000,
-                },
-                servers = {
-                    -- ['terraformls'] = { 'tf' },
-                    ['gopls'] = { 'go' },
-                    ['astro'] = { 'astro' },
-                    ['prettier'] = { 'scss' },
-                    ['lua_ls'] = { 'lua' },
-                    ['rust_analyzer'] = { 'rust' },
-                }
-            })
+            -- lsp.format_on_save({
+            --     format_opts = {
+            --         timeout_ms = 10000,
+            --     },
+            --     servers = {
+            --         ['terraformls'] = { 'tf' },
+            --         ['gopls'] = { 'go' },
+            --         ['astro'] = { 'astro' },
+            --         ['prettier'] = { 'scss' },
+            --         ['lua_ls'] = { 'lua' },
+            --         ['rust_analyzer'] = { 'rust' },
+            --     }
+            -- })
 
             vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
                 vim.lsp.diagnostic.on_publish_diagnostics,

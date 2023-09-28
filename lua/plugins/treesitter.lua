@@ -14,8 +14,6 @@ return {
             },
         },
         config = function()
-            require('ts_context_commentstring').setup {}
-
             require("nvim-treesitter.configs").setup({
                 rainbow = {
                     enable = true,
