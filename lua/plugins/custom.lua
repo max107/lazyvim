@@ -7,13 +7,6 @@ return {
         end
     },
     {
-        'echasnovski/mini.pairs',
-        version = false,
-        config = function()
-            require('mini.pairs').setup()
-        end
-    },
-    {
         'andweeb/presence.nvim',
         config = function()
             require("presence").setup({
@@ -77,5 +70,5 @@ return {
                 }
             })
         end
-    }
+    },
 }

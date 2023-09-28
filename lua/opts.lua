@@ -74,7 +74,6 @@ vim.opt.path:append({ "**" }) -- Finding files - Search down into subfolders
 vim.opt.sidescrolloff = 5
 vim.opt.foldlevelstart = 99
 vim.opt.ruler = false
-vim.opt.showtabline = 2
 vim.opt.winwidth = 30
 vim.opt.winminwidth = 10
 vim.opt.pumheight = 15
