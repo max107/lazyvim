@@ -1,4 +1,8 @@
 return {
+    'mfussenegger/nvim-dap',
+    'rcarriga/nvim-dap-ui',
+    'theHamsta/nvim-dap-virtual-text',
+    'nvim-telescope/telescope-dap.nvim',
     {
         "ray-x/go.nvim",
         dependencies = { -- optional packages
@@ -20,5 +24,25 @@ return {
         event = { "CmdlineEnter" },
         ft = { "go", 'gomod' },
         build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
-    }
+    },
+    -- {
+    --     "klen/nvim-test",
+    --     -- opts = {
+    --     --     -- TestSuite - run the whole test suite
+    --     --     -- TestFile - run all tests for the current file
+    --     --     -- TestEdit - edit tests for the current file
+    --     --     -- TestNearest - run the test nearest to the cursor
+    --     --     -- TestLast - rerun the latest test
+    --     --     -- TestVisit - open the last run test in the current buffer
+    --     --     -- TestInfo - show an information about the plugin
+    --     --     term = "terminal",
+    --     -- },
+    --     config = function()
+    --         require("nvim-test").setup({
+    --             term = "terminal"
+    --         })
+    --         local opts = { silent = true, noremap = true }
+    --         vim.keymap.set('n', '<leader>t', ':TestNearest<cr>', opts)
+    --     end
+    -- }
 }

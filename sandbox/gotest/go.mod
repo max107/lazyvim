@@ -1,4 +1,4 @@
-module sandbox
+module gotest
 
 go 1.21.1
 
