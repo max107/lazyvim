@@ -113,16 +113,17 @@ return {
                 ensure_installed = {
                     "tsserver",
                     "astro",
-                    "dockerls",
-                    "docker_compose_language_service",
+                    -- "dockerls",
+                    -- "docker_compose_language_service",
                     "gopls",
                     "html",
-                    "jsonls",
-                    "intelephense",
+                    -- "jsonls",
+                    -- "intelephense",
+                    "lua_ls",
                     "terraformls",
                     "cssls",
                 },
-                -- automatic_installation = true,
+                automatic_installation = true,
                 handlers = {
                     lsp_zero.default_setup,
                 }
