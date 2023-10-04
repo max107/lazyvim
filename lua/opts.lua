@@ -205,3 +205,15 @@ vim.keymap.set('n', '>', '>>', n_opts)
 -- Visual --
 vim.keymap.set("v", "<", "<gv", n_opts)
 vim.keymap.set("v", ">", ">gv", n_opts)
+-- buffer switch --
+vim.keymap.set("n", "gp", ":bprev<cr>", n_opts)
+vim.keymap.set("n", "gn", ":bnext<cr>", n_opts)
+vim.keymap.set("v", "gp", ":bprev<cr>", n_opts)
+vim.keymap.set("v", "gn", ":bnext<cr>", n_opts)
+
+vim.cmd [[
+command! W execute ":w"
+command! Wq execute ":wq"
+command! WQ execute ":wq"
+command! wQ execute ":wq"
+]]

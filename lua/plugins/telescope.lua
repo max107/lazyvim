@@ -83,7 +83,12 @@ return {
             vim.keymap.set("n", "<leader>f", builtin.find_files, n_opts)
             vim.keymap.set("n", "<leader>g", builtin.live_grep, n_opts)
             -- vim.keymap.set("n", "<leader>fr", builtin.marks, n_opts)
-            vim.keymap.set("n", "<leader>b", builtin.buffers, n_opts)
+            vim.keymap.set("n", "<leader>b", function()
+                builtin.buffers({
+                    sort_mru = true,
+                    ignore_current_buffer = true
+                })
+            end, n_opts)
             vim.keymap.set("n", "<leader>p", builtin.git_status, n_opts)
             vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find, n_opts)
         end
