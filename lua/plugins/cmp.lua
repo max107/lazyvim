@@ -19,6 +19,10 @@ return {
             local cmp_action = require('lsp-zero.cmp').action()
 
             cmp.setup({
+                sources = {
+                    { name = 'nvim_lsp' },
+                    { name = 'cmp_tabnine' },
+                },
                 window = {
                     completion = cmp.config.window.bordered(),
                     documentation = cmp.config.window.bordered(),
