@@ -67,9 +67,6 @@ return {
                         -- },
                     },
                 },
-                context_commentstring = {
-                    enable = true,
-                },
                 highlight = {
                     enable = true,
                     disable = {},
@@ -90,6 +87,7 @@ return {
                     "css",
                     "regex",
                     "gomod",
+                    "sql",
                     "bash",
                     "yaml",
                     "vim",

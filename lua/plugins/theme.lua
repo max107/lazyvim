@@ -1,34 +1,14 @@
 return {
     {
-        "nyoom-engineering/oxocarbon.nvim",
-        config = function()
-            vim.cmd.colorscheme "oxocarbon"
-        end
-    },
-    {
-        "catppuccin/nvim",
-        name = "catppuccin",
+        "loctvl842/monokai-pro.nvim",
+        name = "monokai-pro",
         priority = 1000,
         lazy = false,
         config = function()
-            require("catppuccin").setup({
-                flavour = "mocha",
+            require("monokai-pro").setup({
                 transparent_background = true,
-                integrations = {
-                    cmp = true,
-                    gitsigns = true,
-                    nvimtree = true,
-                    treesitter = true,
-                    lsp_saga = true,
-                    neotree = true
-                },
-                background = {
-                    light = "latte",
-                    dark = "mocha",
-                },
             })
-
-            -- vim.cmd.colorscheme "catppuccin"
-        end,
-    },
+            vim.cmd([[colorscheme monokai-pro]])
+        end
+    }
 }
