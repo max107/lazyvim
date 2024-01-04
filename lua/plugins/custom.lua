@@ -1,5 +1,8 @@
 return {
     {
+        "rfratto/vim-river",
+    },
+    {
         "j-hui/fidget.nvim",
         opts = {
             -- options
