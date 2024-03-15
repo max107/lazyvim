@@ -1,5 +1,8 @@
 return {
     {
+        "google/vim-jsonnet",
+    },
+    {
         "rfratto/vim-river",
     },
     {
