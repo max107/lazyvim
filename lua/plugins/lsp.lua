@@ -1,56 +1,16 @@
 return {
-    -- LSP Support
     {
         'neovim/nvim-lspconfig',
-        cmd = 'LspInfo',
-        event = { 'BufReadPre', 'BufNewFile' },
-        dependencies = {
-            'hrsh7th/cmp-nvim-lsp',
-            'williamboman/mason-lspconfig.nvim',
-            {
-                'williamboman/mason.nvim',
-                build = function()
-                    pcall(vim.cmd, 'MasonUpdate')
-                end,
-            },
-        },
-    },
-    {
-        'VonHeikemen/lsp-zero.nvim',
-        branch = 'v3.x',
-        lazy = true,
-        dependencies = {
-            "neovim/nvim-lspconfig",
-        },
         config = function()
-            local lsp = require('lsp-zero').preset({})
-            lsp.setup({
-                inlay_hints = {
-                    enabled = false
-                },
-                set_lsp_keymaps = {
-                    preserve_mappings = false,
-                    omit = {},
-                },
-            })
-
-            local lspconfig = require('lspconfig')
-
-            lsp.set_server_config({
-                on_init = function(client)
-                    -- if this is not working, move to on_attach
-                    -- https://github.com/williamboman/mason-lspconfig.nvim/issues/211
-                    client.server_capabilities.semanticTokensProvider = nil
-                end,
-            })
-
-            lsp.on_attach(function(client, bufnr)
-                lsp.default_keymaps({ buffer = bufnr })
-                lsp.buffer_autoformat()
-            end)
-
-            -- (Optional) Configure lua language server for neovim
-            lspconfig.lua_ls.setup(lsp.nvim_lua_ls())
+            -- disable semantic token flickering after
+            -- file save
+            -- https://www.reddit.com/r/neovim/comments/zjqquc/how_do_i_turn_off_semantic_tokens/
+            -- vim.api.nvim_create_autocmd("LspAttach", {
+            --     callback = function(args)
+            --         local client = vim.lsp.get_client_by_id(args.data.client_id)
+            --         client.server_capabilities.semanticTokensProvider = nil
+            --     end,
+            -- });
 
             vim.api.nvim_create_autocmd('LspAttach', {
                 desc = 'LSP actions',
@@ -75,80 +35,310 @@ return {
                     vim.keymap.set('n', '<leader>a', '<cmd>Lspsaga code_action<CR>', opts)
                     -- vim.keymap.set('n', '<leader>a', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
 
-                    vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', opts)
                     vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
                     vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
                 end
             })
 
-            -- lsp.format_on_save({
-            --     format_opts = {
-            --         timeout_ms = 10000,
-            --     },
-            --     servers = {
-            --         ['terraformls'] = { 'tf' },
-            --         ['gopls'] = { 'go' },
-            --         ['astro'] = { 'astro' },
-            --         ['prettier'] = { 'scss' },
-            --         ['lua_ls'] = { 'lua' },
-            --         ['rust_analyzer'] = { 'rust' },
-            --     }
-            -- })
+            vim.api.nvim_create_autocmd("BufWritePost", {
+                pattern = "*",
+                callback = function()
+                    vim.lsp.buf.format()
+                end,
+            })
 
-            vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-                vim.lsp.diagnostic.on_publish_diagnostics,
-                {
-                    underline = true,
-                    virtual_text = {
-                        spacing = 3,
-                        severity_limit = "Warning",
-                    },
-                    update_in_insert = true,
-                }
-            )
+            local lspconfig = require('lspconfig')
+
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            capabilities.textDocument.foldingRange = {
+                dynamicRegistration = false,
+                lineFoldingOnly = true
+            }
+
+            local language_servers = {
+                'tsserver',
+                'terraformls',
+                'astro',
+                'dockerls',
+                'gopls',
+                'graphql',
+                -- 'protols',
+                'lua_ls',
+                'bufls',
+                'docker_compose_language_service',
+            }
+
+            for _, ls in ipairs(language_servers) do
+                if ls == "graphql" then
+                    lspconfig[ls].setup({
+                        capabilities = capabilities,
+                        root_dir = lspconfig.util.root_pattern("graphql.config.yml"),
+                        flags = {
+                            debounce_text_changes = 150,
+                        },
+                    })
+                elseif ls == "lua_ls" then
+                    lspconfig[ls].setup({
+                        capabilities = capabilities,
+                        -- you can add other fields for setting up lsp server in this table
+                        on_init = function(client)
+                            local path = client.workspace_folders[1].name
+                            if vim.loop.fs_stat(path .. '/.luarc.json') or vim.loop.fs_stat(path .. '/.luarc.jsonc') then
+                                return
+                            end
+
+                            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+                                runtime = {
+                                    -- Tell the language server which version of Lua you're using
+                                    -- (most likely LuaJIT in the case of Neovim)
+                                    version = 'LuaJIT'
+                                },
+                                -- Make the server aware of Neovim runtime files
+                                workspace = {
+                                    checkThirdParty = false,
+                                    library = {
+                                        vim.env.VIMRUNTIME
+                                        -- Depending on the usage, you might want to add additional paths here.
+                                        -- "${3rd}/luv/library"
+                                        -- "${3rd}/busted/library",
+                                    }
+                                    -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
+                                    -- library = vim.api.nvim_get_runtime_file("", true)
+                                }
+                            })
+                        end,
+                        settings = {
+                            Lua = {}
+                        }
+                    })
+                else
+                    lspconfig[ls].setup({
+                        capabilities = capabilities
+                        -- you can add other fields for setting up lsp server in this table
+                    })
+                end
+            end
         end
     },
     {
-        -- Optional
-        'williamboman/mason-lspconfig.nvim',
+        'nvimdev/lspsaga.nvim',
         config = function()
-            local lsp_zero = require('lsp-zero')
-
-            require("mason-lspconfig").setup({
-                ensure_installed = {
-                    "tsserver",
-                    "astro",
-                    -- "dockerls",
-                    -- "docker_compose_language_service",
-                    "gopls",
-                    "html",
-                    -- "jsonls",
-                    -- "intelephense",
-                    "lua_ls",
-                    "terraformls",
-                    "cssls",
+            require('lspsaga').setup({
+                ui = {
+                    code_action = ''
                 },
-                automatic_installation = true,
-                handlers = {
-                    lsp_zero.default_setup,
+                symbol_in_winbar = {
+                    enable = false
+                },
+                finder = {
+                    default = 'ref+imp+def+tyd',
+                    methods = {
+                        tyd = "textDocument/typeDefinition"
+                    },
+                    keys = {
+                        toggle_or_open = '<cr>'
+                    }
+                },
+                outline = {
+                    keys = {
+                        toggle_or_jump = '<cr>'
+                    }
                 }
             })
         end,
         dependencies = {
+            'nvim-treesitter/nvim-treesitter', -- optional
+            'nvim-tree/nvim-web-devicons'      -- optional
+        }
+    },
+    {
+        'echasnovski/mini.nvim',
+        version = '*',
+        config = function()
+            require('mini.comment').setup({
+                -- Module mappings. Use `''` (empty string) to disable one.
+                mappings = {
+                    -- Toggle comment (like `gcip` - comment inner paragraph) for both
+                    -- Normal and Visual modes
+                    comment = 'gc',
+
+                    -- Toggle comment on current line
+                    comment_line = 'gmc',
+
+                    -- Toggle comment on visual selection
+                    comment_visual = 'gc',
+
+                    -- Define 'comment' textobject (like `dgc` - delete whole comment block)
+                    -- Works also in Visual mode if mapping differs from `comment_visual`
+                    textobject = 'gc',
+                },
+            })
+        end
+    },
+    'mfussenegger/nvim-dap',
+    'rcarriga/nvim-dap-ui',
+    'theHamsta/nvim-dap-virtual-text',
+    'nvim-telescope/telescope-dap.nvim',
+    {
+        "ray-x/go.nvim",
+        dependencies = { -- optional packages
+            "ray-x/guihua.lua",
+            "neovim/nvim-lspconfig",
+            "nvim-treesitter/nvim-treesitter",
+        },
+        config = function()
+            require("go").setup({
+                silent = false,    -- less notifications
+                term = "terminal", -- a terminal to run ("terminal"|"toggleterm")
+                lsp_inlay_hints = {
+                    enable = true
+                },
+                termOpts = {
+                    direction = "vertical", -- terminal's direction ("horizontal"|"vertical"|"float")
+                    width = 96,             -- terminal's width (for vertical|float)
+                    height = 24,            -- terminal's height (for horizontal|float)
+                    go_back = false,        -- return focus to original window after executing
+                    stopinsert = "auto",    -- exit from insert mode (true|false|"auto")
+                    keep_one = true,        -- keep only one terminal for testing
+                },
+            })
+
+            vim.keymap.set("n", "<leader>tf", ":GoTestFile<CR>", { remap = false })
+            vim.keymap.set("n", "<leader>tt", ":GoTestFunc<CR>", { remap = false })
+            vim.keymap.set("n", "<leader>tp", ":GoTestPkg<CR>", { remap = false })
+        end,
+        event = { "CmdlineEnter" },
+        ft = { "go", 'gomod' },
+        build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
+    },
+    -- {
+    --     'windwp/nvim-autopairs',
+    --     event = "InsertEnter",
+    --     opts = {
+    --         disable_filetype = { "TelescopePrompt", "vim" },
+    --     },
+    --     config = function()
+    --         -- If you want insert `(` after select function or method item
+    --         local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+    --         local cmp = require('cmp')
+    --         cmp.event:on(
+    --             'confirm_done',
+    --             cmp_autopairs.on_confirm_done()
+    --         )
+    --     end
+    -- },
+    {
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        event = "BufWinEnter",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter-refactor",
+            'JoosepAlviste/nvim-ts-context-commentstring',
             {
-                "williamboman/mason.nvim",
-                build = ":MasonUpdate",
-                config = function()
-                    require("mason").setup({
-                        ui = {
-                            icons = {
-                                package_installed = "✓",
-                                package_pending = "➜",
-                                package_uninstalled = "✗"
-                            }
-                        }
-                    })
-                end
+                "windwp/nvim-ts-autotag",
+                event = "InsertEnter",
+            },
+        },
+        config = function()
+            require("nvim-treesitter.configs").setup({
+                -- autopairs = {
+                --     enable = false,
+                -- },
+                autotag = {
+                    enable = true,
+                },
+                refactor = {
+                    highlight_definitions = {
+                        enable = true,
+                    },
+                    highlight_current_scope = {
+                        enable = false,
+                    },
+                    smart_rename = {
+                        enable = true,
+                        keymaps = {
+                            smart_rename = "grr",
+                        },
+                    },
+                    navigation = {
+                        enable = false,
+                        -- enable = true,
+                        -- keymaps = {
+                        --   goto_definition = "gd",
+                        --   list_definitions = "gD",
+                        --   list_definitions_toc = "gO",
+                        --   goto_next_usage = "<a-*>",
+                        --   goto_previous_usage = "<a-#>",
+                        -- },
+                    },
+                },
+                highlight = {
+                    enable = true,
+                    disable = {},
+                },
+                indent = {
+                    enable = true,
+                    disable = {},
+                },
+                ensure_installed = {
+                    "lua",
+                    "json",
+                    "astro",
+                    "typescript",
+                    "css",
+                    "sql",
+                    "bash",
+                    "yaml",
+                    "html",
+                    "javascript",
+                    "go",
+                    "terraform",
+                    "fish",
+                    "dockerfile",
+                    "toml",
+                    "graphql",
+                    "scss",
+                    "hcl",
+                    "markdown",
+                },
+                sync_install = false,
+            })
+        end
+    },
+    {
+        "folke/trouble.nvim",
+        opts = {}, -- for default options, refer to the configuration section for custom setup.
+        cmd = "Trouble",
+        keys = {
+            {
+                "<leader>xx",
+                "<cmd>Trouble diagnostics toggle<cr>",
+                desc = "Diagnostics (Trouble)",
+            },
+            {
+                "<leader>xX",
+                "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+                desc = "Buffer Diagnostics (Trouble)",
+            },
+            {
+                "<leader>cs",
+                "<cmd>Trouble symbols toggle focus=false<cr>",
+                desc = "Symbols (Trouble)",
+            },
+            {
+                "<leader>cl",
+                "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+                desc = "LSP Definitions / references / ... (Trouble)",
+            },
+            {
+                "<leader>xL",
+                "<cmd>Trouble loclist toggle<cr>",
+                desc = "Location List (Trouble)",
+            },
+            {
+                "<leader>xQ",
+                "<cmd>Trouble qflist toggle<cr>",
+                desc = "Quickfix List (Trouble)",
             },
         },
     },

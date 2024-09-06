@@ -1,14 +1,13 @@
 return {
     {
-        "loctvl842/monokai-pro.nvim",
-        name = "monokai-pro",
-        priority = 1000,
+        "xiyaowong/virtcolumn.nvim",
+    },
+    {
+        "projekt0n/github-nvim-theme",
         lazy = false,
+        priority = 1000,
         config = function()
-            require("monokai-pro").setup({
-                transparent_background = true,
-            })
-            vim.cmd([[colorscheme monokai-pro]])
+            vim.cmd('colorscheme github_dark')
         end
-    }
+    },
 }
