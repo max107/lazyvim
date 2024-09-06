@@ -56,7 +56,7 @@ return {
             }
 
             local language_servers = {
-                'tsserver',
+                'ts_ls',
                 'terraformls',
                 'astro',
                 'dockerls',
