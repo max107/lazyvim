@@ -40,12 +40,12 @@ return {
                 end
             })
 
-            vim.api.nvim_create_autocmd("BufWritePost", {
-                pattern = "*",
-                callback = function()
-                    vim.lsp.buf.format()
-                end,
-            })
+            -- vim.api.nvim_create_autocmd("BufWritePost", {
+            --     pattern = "*",
+            --     callback = function()
+            --         vim.lsp.buf.format()
+            --     end,
+            -- })
 
             local lspconfig = require('lspconfig')
 
@@ -54,6 +54,20 @@ return {
                 dynamicRegistration = false,
                 lineFoldingOnly = true
             }
+
+            local on_attach = function(client, bufnr)
+                vim.keymap.set('n', '<leader>w', function()
+                    local params = vim.lsp.util.make_formatting_params({})
+                    local handler = function(err, result)
+                        if not result then return end
+
+                        vim.lsp.util.apply_text_edits(result, bufnr, client.offset_encoding)
+                        vim.cmd('write')
+                    end
+
+                    client.request('textDocument/formatting', params, handler, bufnr)
+                end, { buffer = bufnr })
+            end
 
             local language_servers = {
                 'ts_ls',
@@ -72,6 +86,7 @@ return {
                 if ls == "graphql" then
                     lspconfig[ls].setup({
                         capabilities = capabilities,
+                        on_attach = on_attach,
                         root_dir = lspconfig.util.root_pattern("graphql.config.yml"),
                         flags = {
                             debounce_text_changes = 150,
@@ -80,6 +95,7 @@ return {
                 elseif ls == "lua_ls" then
                     lspconfig[ls].setup({
                         capabilities = capabilities,
+                        on_attach = on_attach,
                         -- you can add other fields for setting up lsp server in this table
                         on_init = function(client)
                             local path = client.workspace_folders[1].name
@@ -152,11 +168,14 @@ return {
         }
     },
     {
-        'echasnovski/mini.nvim',
-        version = '*',
-        config = function()
-            require('mini.comment').setup({
-                -- Module mappings. Use `''` (empty string) to disable one.
+        "echasnovski/mini.comment",
+        event = "VeryLazy",
+        opts = { -- these are the default options
+            options = {
+                custom_commentstring = function()
+                    return require("ts_context_commentstring.internal").calculate_commentstring() or vim.bo
+                        .commentstring
+                end,
                 mappings = {
                     -- Toggle comment (like `gcip` - comment inner paragraph) for both
                     -- Normal and Visual modes
@@ -172,8 +191,8 @@ return {
                     -- Works also in Visual mode if mapping differs from `comment_visual`
                     textobject = 'gc',
                 },
-            })
-        end
+            },
+        },
     },
     'mfussenegger/nvim-dap',
     'rcarriga/nvim-dap-ui',
@@ -301,6 +320,7 @@ return {
                     "scss",
                     "hcl",
                     "markdown",
+                    "nix",
                 },
                 sync_install = false,
             })

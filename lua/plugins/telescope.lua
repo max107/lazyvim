@@ -5,10 +5,10 @@ return {
             {
                 "nvim-lua/plenary.nvim"
             },
-            {
-                "nvim-telescope/telescope-fzf-native.nvim",
-                build = 'make'
-            },
+            -- {
+            --     "nvim-telescope/telescope-fzf-native.nvim",
+            --     build = 'make'
+            -- },
         },
         config = function()
             -- You dont need to set any of these options. These are the default ones. Only
@@ -78,7 +78,7 @@ return {
             })
             -- To get fzf loaded and working with telescope, you need to call
             -- load_extension, somewhere after setup function:
-            telescope.load_extension("fzf")
+            -- telescope.load_extension("fzf")
 
             local n_opts = { silent = true, noremap = true }
             local builtin = require("telescope.builtin")

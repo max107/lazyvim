@@ -10,6 +10,10 @@ if not vim.loop.fs_stat(lazypath) then
     })
 end
 vim.opt.rtp:prepend(lazypath)
+vim.cmd([[
+autocmd FileType nix setlocal tabstop=2 shiftwidth=2
+autocmd FileType river setlocal tabstop=2 shiftwidth=2
+]])
 
 require("opts")
 require("lazy").setup("plugins", {
