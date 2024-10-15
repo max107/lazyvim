@@ -174,3 +174,5 @@ command! W execute ":w"
 command! Wq execute ":wq"
 command! WQ execute ":wq"
 ]]
+
+vim.cmd [[autocmd BufNewFile,BufRead *.nomad setfiletype hcl]]
