@@ -54,6 +54,12 @@ return {
                 dynamicRegistration = false,
                 lineFoldingOnly = true
             }
+            vim.api.nvim_create_autocmd("BufWritePre", {
+                -- buffer = buffer,
+                callback = function()
+                    vim.lsp.buf.format { async = false }
+                end
+            })
 
             local on_attach = function(client, bufnr)
                 vim.keymap.set('n', '<leader>w', function()
@@ -62,6 +68,7 @@ return {
                         if not result then return end
 
                         vim.lsp.util.apply_text_edits(result, bufnr, client.offset_encoding)
+                        -- vim.lsp.buf.format()
                         vim.cmd('write')
                     end
 
