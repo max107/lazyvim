@@ -95,6 +95,7 @@ return {
                         capabilities = capabilities,
                         on_attach = on_attach,
                         root_dir = lspconfig.util.root_pattern("graphql.config.yml"),
+                        -- root_dir = lspconfig.util.root_pattern("gqlgen.yml"),
                         flags = {
                             debounce_text_changes = 150,
                         },
