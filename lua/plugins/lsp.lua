@@ -1,6 +1,9 @@
 return {
     {
         'neovim/nvim-lspconfig',
+        dependencies = {
+            "nanotee/sqls.nvim",
+        },
         config = function()
             -- disable semantic token flickering after
             -- file save
@@ -86,6 +89,7 @@ return {
                 'protols',
                 'lua_ls',
                 'bufls',
+                'sqlls',
                 'docker_compose_language_service',
             }
 
