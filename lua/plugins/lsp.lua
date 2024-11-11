@@ -88,7 +88,7 @@ return {
                 'graphql',
                 'protols',
                 'lua_ls',
-                'bufls',
+                'buf_ls',
                 'sqlls',
                 'docker_compose_language_service',
             }
