@@ -82,14 +82,13 @@ return {
             local language_servers = {
                 'ts_ls',
                 'terraformls',
-                'astro',
                 'dockerls',
                 'gopls',
                 'graphql',
                 'protols',
                 'lua_ls',
                 'buf_ls',
-                'sqlls',
+                'volar',
                 'docker_compose_language_service',
             }
 
@@ -103,6 +102,27 @@ return {
                         flags = {
                             debounce_text_changes = 150,
                         },
+                    })
+                elseif ls == "ts_ls" then
+                    lspconfig[ls].setup({
+                        capabilities = capabilities,
+                        on_attach = on_attach,
+                        init_options = {
+                            plugins = {
+                                {
+                                    name = '@vue/typescript-plugin',
+                                    location = '/Users/max/.bun/install/cache/@vue/typescript-plugin/2.2.10@@@1/',
+                                    languages = { 'vue' },
+                                },
+                            },
+                        },
+                        filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+                    })
+                elseif ls == "volar" then
+                    lspconfig[ls].setup({
+                        capabilities = capabilities,
+                        on_attach = on_attach,
+                        filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
                     })
                 elseif ls == "lua_ls" then
                     lspconfig[ls].setup({
