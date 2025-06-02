@@ -5,10 +5,10 @@ return {
             {
                 "nvim-lua/plenary.nvim"
             },
-            -- {
-            --     "nvim-telescope/telescope-fzf-native.nvim",
-            --     build = 'make'
-            -- },
+            {
+                "nvim-telescope/telescope-fzf-native.nvim",
+                build = 'make'
+            },
         },
         config = function()
             -- You dont need to set any of these options. These are the default ones. Only
