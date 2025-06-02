@@ -91,6 +91,7 @@ return {
                 'buf_ls',
                 'sqlls',
                 'docker_compose_language_service',
+                'golangci_lint_ls',
             }
 
             for _, ls in ipairs(language_servers) do
