@@ -89,6 +89,7 @@ return {
                 'lua_ls',
                 'buf_ls',
                 'volar',
+                'pyright',
                 'docker_compose_language_service',
                 'golangci_lint_ls',
             }
