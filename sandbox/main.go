@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 type ITest interface {
 }
@@ -10,6 +13,10 @@ type Test struct {
 
 func testFn(a string, b bool) error {
 	return nil
+}
+
+func init() {
+	rnd := rand.New(rand.NewSource(0))
 }
 
 func main() {

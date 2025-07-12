@@ -1,13 +1,12 @@
--- map leader to <Space>
-vim.keymap.set("n", " ", "<Nop>", { silent = true, remap = false })
-vim.g.mapleader = " "
-
 vim.scriptencoding = "utf-8"
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
 
--- vim.diagnostic.config({ virtual_text = { current_line = true } })
--- vim.o.winborder = 'single'
+vim.keymap.set("n", " ", "<Nop>", { silent = true, remap = false })
+
+-- map leader to <Space>
+vim.g.mapleader = " "
+
 vim.opt.cursorline = true
 vim.opt.smartindent = true
 vim.opt.hlsearch = true
@@ -21,7 +20,7 @@ vim.opt.virtualedit = "block"
 vim.opt.encoding = "utf-8"
 vim.opt.wildignorecase = true
 vim.opt.wildignore =
-".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/vendor/**,**/bower_modules/**"
+".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/vendor/**"
 vim.opt.backup = false
 vim.opt.writebackup = false
 vim.opt.swapfile = false
@@ -78,6 +77,11 @@ vim.opt.breakindentopt = "shift:2,min:20"
 vim.opt.wrap = false
 vim.opt.linebreak = false -- Wrap on word boundary
 vim.opt.colorcolumn = "80"
+
+vim.o.foldlevel = 99
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+
 vim.opt.clipboard = "unnamedplus"
 
 if vim.loop.os_uname().sysname == "Darwin" then
@@ -178,3 +182,13 @@ command! WQ execute ":wq"
 ]]
 
 vim.cmd [[autocmd BufNewFile,BufRead *.nomad setfiletype hcl]]
+
+vim.diagnostic.config({ virtual_text = { current_line = true } })
+vim.o.winborder = 'single'
+
+vim.keymap.del("n", "gcc")
+vim.keymap.del("n", "gc")
+-- vim.keymap.del("i", "gcc")
+-- vim.keymap.del("i", "gc")
+-- vim.keymap.del("v", "gcc")
+-- vim.keymap.del("v", "gc")

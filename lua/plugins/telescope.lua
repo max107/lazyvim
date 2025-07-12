@@ -1,92 +1,75 @@
 return {
     {
-    "nvim-telescope/telescope.nvim",
-    dependencies = {
-        { "nvim-lua/plenary.nvim" },
-        { "nvim-telescope/telescope-fzf-native.nvim", build = 'make' },
-    },
-    config = function()
-        -- You dont need to set any of these options. These are the default ones. Only
-        -- the loading is important
-        local telescope = require("telescope")
-        local actions = require("telescope.actions")
-
-        telescope.setup({
-            defaults = {
-                mappings = {
-                    i = {
-                        ["<esc>"] = actions.close,
-                    },
+        "folke/snacks.nvim",
+        priority = 1000,
+        lazy = false,
+        opts = {
+            bigfile = { enabled = true },
+            dashboard = { enabled = false },
+            explorer = { enabled = false },
+            indent = { enabled = true },
+            input = { enabled = false },
+            picker = { enabled = true },
+            notifier = { enabled = true },
+            quickfile = { enabled = true },
+            scope = { enabled = true },
+            scroll = { enabled = false },
+            statuscolumn = {
+                enabled = true,
+                left = { "mark", "sign" }, -- priority of signs on the left (high to low)
+                right = { "fold", "git" }, -- priority of signs on the right (high to low)
+                folds = {
+                    open = true,           -- show open fold icons
+                    git_hl = true,         -- use Git Signs hl for fold icons
                 },
-                -- prompt_position = "top",
-                -- sorting_strategy = "ascending",
-                file_ignore_patterns = {
-                    "node_modules",
-                    "vendor",
-                    "venv",
-                    "htmlcov",
-                    ".idea",
-                    ".git",
-                    "symfony/var/.*",
+                git = {
+                    -- patterns to match Git signs
+                    patterns = { "GitSign", "MiniDiffSign" },
                 },
-                vimgrep_arguments = {
-                    "rg",
-                    "--color=never",
-                    "--no-heading",
-                    "--with-filename",
-                    "--line-number",
-                    "--column",
-                    "--smart-case",
-                    "--trim",
-                    "--no-ignore",
-                    "--hidden",
-                },
+                refresh = 50, -- refresh at most every 50ms
             },
-            pickers = {
-                find_files = {
-                    hidden = true,
-                    previewer = false,
-                },
-                git_files = {
-                    hidden = true,
-                    previewer = false,
-                },
-                live_grep = {
-                    hidden = true,
-                    previewer = false,
-                    only_sort_text = true,
-                },
-                buffers = {
-                    previewer = false,
-                },
-            },
-            extensions = {
-                fzf = {
-                    fuzzy = true,                   -- false will only do exact matching
-                    override_generic_sorter = true, -- override the generic sorter
-                    override_file_sorter = true,    -- override the file sorter
-                    case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
-                    -- the default case_mode is "smart_case"
-                },
-            },
-        })
-        -- To get fzf loaded and working with telescope, you need to call
-        -- load_extension, somewhere after setup function:
-        -- telescope.load_extension("fzf")
-
-        local n_opts = { silent = true, noremap = true }
-        local builtin = require("telescope.builtin")
-        vim.keymap.set("n", "<leader>f", builtin.find_files, n_opts)
-        vim.keymap.set("n", "<leader>g", builtin.live_grep, n_opts)
-        -- vim.keymap.set("n", "<leader>fr", builtin.marks, n_opts)
-        vim.keymap.set("n", "<leader>b", function()
-            builtin.buffers({
-                sort_mru = true,
-                ignore_current_buffer = true
-            })
-        end, n_opts)
-        vim.keymap.set("n", "<leader>p", builtin.git_status, n_opts)
-        vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find, n_opts)
-    end
-}
+            words = { enabled = false },
+        },
+        keys = {
+            -- Top Pickers & Explorer
+            -- { "<leader><space>", function() Snacks.picker.smart() end,                                   desc = "Smart Find Files" },
+            -- { "<leader>,",       function() Snacks.picker.buffers() end,                                 desc = "Buffers" },
+            -- { "<leader>:",       function() Snacks.picker.command_history() end,                         desc = "Command History" },
+            -- { "<leader>n",       function() Snacks.picker.notifications() end,                           desc = "Notification History" },
+            -- { "<leader>e",       function() Snacks.explorer() end,                                       desc = "File Explorer" },
+            -- find
+            { "<leader>b",  function() Snacks.picker.buffers() end,              desc = "Buffers" },
+            { "<leader>f",  function() Snacks.picker.files() end,                desc = "Find Files" },
+            { "<leader>p",  function() Snacks.picker.git_files() end,            desc = "Find Git Files" },
+            -- { "<leader>fp", function() Snacks.picker.projects() end,  desc = "Projects" },
+            -- { "<leader>fr", function() Snacks.picker.recent() end,    desc = "Recent" },
+            -- git
+            -- { "<leader>gb",      function() Snacks.picker.git_branches() end,                            desc = "Git Branches" },
+            -- { "<leader>gl",      function() Snacks.picker.git_log() end,                                 desc = "Git Log" },
+            -- { "<leader>gL",      function() Snacks.picker.git_log_line() end,                            desc = "Git Log Line" },
+            -- { "<leader>gs",      function() Snacks.picker.git_status() end,                              desc = "Git Status" },
+            -- { "<leader>gS",      function() Snacks.picker.git_stash() end,                               desc = "Git Stash" },
+            -- { "<leader>gd",      function() Snacks.picker.git_diff() end,                                desc = "Git Diff (Hunks)" },
+            -- { "<leader>gf",      function() Snacks.picker.git_log_file() end,                            desc = "Git Log File" },
+            -- -- Grep
+            -- { "<leader>sb",      function() Snacks.picker.lines() end,                                   desc = "Buffer Lines" },
+            { "<leader>g",  function() Snacks.picker.grep() end,                 desc = "Grep" },
+            -- { "<leader>sw",      function() Snacks.picker.grep_word() end,                               desc = "Visual selection or word", mode = { "n", "x" } },
+            -- -- search
+            -- { '<leader>s"',      function() Snacks.picker.registers() end,                               desc = "Registers" },
+            -- { "<leader>sC",      function() Snacks.picker.commands() end,                                desc = "Commands" },
+            { "<leader>sd", function() Snacks.picker.diagnostics() end,          desc = "Diagnostics" },
+            -- { "<leader>sD",      function() Snacks.picker.diagnostics_buffer() end,                      desc = "Buffer Diagnostics" },
+            { "<leader>sk", function() Snacks.picker.keymaps() end,              desc = "Keymaps" },
+            -- { "<leader>sm",      function() Snacks.picker.marks() end,                                   desc = "Marks" },
+            -- -- LSP
+            { "gd",         function() Snacks.picker.lsp_definitions() end,      desc = "Goto Definition" },
+            { "gD",         function() Snacks.picker.lsp_declarations() end,     desc = "Goto Declaration" },
+            { "gr",         function() Snacks.picker.lsp_references() end,       nowait = true,                  desc = "References" },
+            { "gI",         function() Snacks.picker.lsp_implementations() end,  desc = "Goto Implementation" },
+            { "gy",         function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
+            -- { "<leader>ss",      function() Snacks.picker.lsp_symbols() end,                             desc = "LSP Symbols" },
+            -- { "<leader>sS",      function() Snacks.picker.lsp_workspace_symbols() end,                   desc = "LSP Workspace Symbols" },
+        },
+    }
 }
