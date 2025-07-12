@@ -145,8 +145,7 @@ return {
             completion = {
                 documentation = { auto_show = false },
                 ghost_text = {
-                    enabled = true,
-                    show_with_menu = true
+                    enabled = false,
                 },
                 menu = {
                     auto_show = true,
@@ -253,13 +252,13 @@ return {
                     -- vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
                     vim.keymap.set('n', 'gd', '<cmd>Lspsaga finder<CR>', opts)
 
-                    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
-                    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
-                    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
-                    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
-                    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
-                    vim.keymap.set('n', '<leader>r', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-                    vim.keymap.set({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+                    -- vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+                    -- vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+                    -- vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+                    -- vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+                    -- vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+                    -- vim.keymap.set('n', '<leader>r', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+                    -- vim.keymap.set({ 'n', 'x' }, '<leader>cf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
 
                     vim.keymap.set('n', '<leader>a', '<cmd>Lspsaga code_action<CR>', opts)
                     vim.keymap.set('n', '<leader>co', '<cmd>Lspsaga outline<CR>', opts)
@@ -440,21 +439,4 @@ return {
             })
         end
     },
-    -- {
-    --     "folke/trouble.nvim",
-    --     opts = {},
-    --     cmd = "Trouble",
-    --     keys = {
-    --         {
-    --             "<leader>xx",
-    --             "<cmd>Trouble diagnostics toggle<cr>",
-    --             desc = "Diagnostics (Trouble)",
-    --         },
-    --         {
-    --             "<leader>xb",
-    --             "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-    --             desc = "Buffer Diagnostics (Trouble)",
-    --         },
-    --     },
-    -- },
 }
