@@ -6,6 +6,8 @@ vim.scriptencoding = "utf-8"
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
 
+-- vim.diagnostic.config({ virtual_text = { current_line = true } })
+-- vim.o.winborder = 'single'
 vim.opt.cursorline = true
 vim.opt.smartindent = true
 vim.opt.hlsearch = true
