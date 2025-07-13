@@ -85,20 +85,20 @@ vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.clipboard = "unnamedplus"
 
 if vim.loop.os_uname().sysname == "Darwin" then
-    vim.g.clipboard = {
-        name = "macOS-clipboard",
-        copy = {
-            ["+"] = "pbcopy",
-            ["*"] = "pbcopy",
-        },
-        paste = {
-            ["+"] = "pbpaste",
-            ["*"] = "pbpaste",
-        },
-        cache_enabled = 0,
-    }
-    vim.g.python_host_prog = "/usr/bin/python"
-    vim.g.python3_host_prog = "/usr/local/bin/python3"
+  vim.g.clipboard = {
+    name = "macOS-clipboard",
+    copy = {
+      ["+"] = "pbcopy",
+      ["*"] = "pbcopy",
+    },
+    paste = {
+      ["+"] = "pbpaste",
+      ["*"] = "pbpaste",
+    },
+    cache_enabled = 0,
+  }
+  vim.g.python_host_prog = "/usr/bin/python"
+  vim.g.python3_host_prog = "/usr/local/bin/python3"
 end
 
 -- Undercurl
@@ -110,20 +110,20 @@ local api = vim.api
 -- Highlight on yank
 local yankGrp = api.nvim_create_augroup("YankHighlight", { clear = true })
 api.nvim_create_autocmd("TextYankPost", {
-    command = "silent! lua vim.highlight.on_yank({higroup='IncSearch', timeout=100})",
-    group = yankGrp,
+  command = "silent! lua vim.highlight.on_yank({higroup='IncSearch', timeout=100})",
+  group = yankGrp,
 })
 
 -- show cursor line only in active window
 local cursorGrp = api.nvim_create_augroup("CursorLine", { clear = true })
 api.nvim_create_autocmd({ "InsertLeave", "WinEnter" }, {
-    pattern = "*",
-    command = "set cursorline",
-    group = cursorGrp,
+  pattern = "*",
+  command = "set cursorline",
+  group = cursorGrp,
 })
 api.nvim_create_autocmd(
-    { "InsertEnter", "WinLeave" },
-    { pattern = "*", command = "set nocursorline", group = cursorGrp }
+  { "InsertEnter", "WinLeave" },
+  { pattern = "*", command = "set nocursorline", group = cursorGrp }
 )
 
 -- Remove whitespace on save
@@ -134,31 +134,31 @@ api.nvim_create_autocmd("BufEnter", { command = [[set fo-=c fo-=r fo-=o]] })
 
 -- go to last loc when opening a buffer
 api.nvim_create_autocmd(
-    "BufReadPost",
-    { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
+  "BufReadPost",
+  { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
 )
 
 -- kill all floating windows
 vim.keymap.set("n", "<leader>cc",
-    ':lua for _, win in ipairs(vim.api.nvim_list_wins()) do local config = vim.api.nvim_win_get_config(win); if config.relative ~= "" then vim.api.nvim_win_close(win, false); print("Closing window", win) end end<CR>',
-    { remap = false })
+  ':lua for _, win in ipairs(vim.api.nvim_list_wins()) do local config = vim.api.nvim_win_get_config(win); if config.relative ~= "" then vim.api.nvim_win_close(win, false); print("Closing window", win) end end<CR>',
+  { remap = false })
 
 api.nvim_create_autocmd({ "FileType" }, {
-    pattern = "yaml",
-    callback = function()
-        vim.opt_local.shiftwidth = 2
-        vim.opt_local.tabstop = 2
-        vim.opt_local.expandtab = true
-    end
+  pattern = "yaml",
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.expandtab = true
+  end
 })
 
 api.nvim_create_autocmd({ "FileType" }, {
-    pattern = "scss",
-    callback = function()
-        vim.opt_local.shiftwidth = 2
-        vim.opt_local.tabstop = 2
-        vim.opt_local.expandtab = true
-    end
+  pattern = "scss",
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.expandtab = true
+  end
 })
 
 -- Stay in indent mode

@@ -1,4 +1,4 @@
 return {
-    "google/vim-jsonnet",
-    "Joorem/vim-haproxy",
+  "google/vim-jsonnet",
+  "Joorem/vim-haproxy",
 }

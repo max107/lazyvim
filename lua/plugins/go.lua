@@ -1,36 +1,28 @@
 return {
-    -- {
-    --     "ray-x/go.nvim",
-    --     dependencies = {
-    --         "ray-x/guihua.lua",
-    --         "nvim-treesitter/nvim-treesitter",
-    --     },
-    --     event = { "CmdlineEnter" },
-    --     ft = { "go", 'gomod' },
-    --     -- if you need to install/update all binaries
-    --     build = ':lua require("go.install").update_all_sync()',
-    --     opts = {
-    --         lsp_keymaps = false,
-    --         silent = false,    -- less notifications
-    --         term = "terminal", -- a terminal to run ("terminal"|"toggleterm")
-    --         lsp_inlay_hints = {
-    --             enable = true
-    --         },
-    --         termOpts = {
-    --             direction = "vertical", -- terminal's direction ("horizontal"|"vertical"|"float")
-    --             width = 96,             -- terminal's width (for vertical|float)
-    --             height = 24,            -- terminal's height (for horizontal|float)
-    --             go_back = false,        -- return focus to original window after executing
-    --             stopinsert = "auto",    -- exit from insert mode (true|false|"auto")
-    --             keep_one = true,        -- keep only one terminal for testing
-    --         },
-    --     },
-    --     config = function(_, opts)
-    --         require("go").setup(opts)
-    --
-    --         vim.keymap.set("n", "<leader>tf", ":GoTestFile<CR>", { remap = false })
-    --         vim.keymap.set("n", "<leader>tt", ":GoTestFunc<CR>", { remap = false })
-    --         vim.keymap.set("n", "<leader>tp", ":GoTestPkg<CR>", { remap = false })
-    --     end,
-    -- },
+  {
+    "ray-x/go.nvim",
+    dependencies = {     -- optional packages
+      "ray-x/guihua.lua",
+      "neovim/nvim-lspconfig",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    opts = {
+      -- lsp_keymaps = false,
+      -- other options
+    },
+    config = function(_, opts)
+      require("go").setup(opts)
+      local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = "*.go",
+        callback = function()
+          require('go.format').goimports()
+        end,
+        group = format_sync_grp,
+      })
+    end,
+    event = { "CmdlineEnter" },
+    ft = { "go", 'gomod' },
+    build = ':lua require("go.install").update_all_sync()'     -- if you need to install/update all binaries
+  }
 }
