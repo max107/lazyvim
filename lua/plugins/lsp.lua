@@ -11,6 +11,11 @@ return {
             vim.lsp.config("*", {
                 capabilities = require('blink.cmp').get_lsp_capabilities({
                     textDocument = {
+                        completion = {
+                            completionItem = {
+                                snippetSupport = true
+                            },
+                        },
                         semanticTokens = {
                             multilineTokenSupport = true
                         },
@@ -49,6 +54,10 @@ return {
                 },
             })
 
+            vim.lsp.config('graphql', {
+                filetypes = { "graphql", "graphqls", "typescriptreact", "javascriptreact" }
+            })
+
             vim.lsp.config("vtsls", {
                 cmd = { "vtsls", "--stdio" },
                 filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue" },
@@ -69,12 +78,61 @@ return {
                 },
             })
 
+            vim.lsp.config('terraformls', {
+                root_markers = { ".terraform", ".git", "root.tf", "main.tf", ".terraform.lock.hcl" }
+            })
+
+            vim.lsp.config('yamlls', {
+                settings = {
+                    yaml = {
+                        schemas = {
+                            ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+                            ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] =
+                            "/.gitlab-ci.yml"
+                        },
+                    },
+                }
+            })
+
             vim.lsp.enable({
+                -- neovim
                 "lua_ls",
-                "gopls",
+
+                -- vue, typescript
                 "vtsls",
                 "vue_ls",
+
+                -- golang
+                "gopls",
                 'golangci_lint_ls',
+
+                -- docker
+                'dockerls',
+                'docker_compose_language_service',
+
+                -- graphql
+                'graphql',
+
+                -- jsonnet (k8s, grafana)
+                'jsonnet_ls',
+
+                -- gitlab ci, github ci
+                'yamlls',
+
+                -- protobuf
+                'protols',
+
+                -- python
+                'basedpyright',
+
+                -- terraform
+                'terraformls',
+
+                -- vscode language servers
+                'cssls',
+                'jsonls',
+                'html',
+                'eslint',
             })
 
             vim.api.nvim_create_autocmd("BufWritePost", {
