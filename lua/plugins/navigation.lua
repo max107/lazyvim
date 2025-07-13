@@ -1,5 +1,20 @@
 return {
     {
+        "folke/flash.nvim",
+        event = "VeryLazy",
+        ---@type Flash.Config
+        opts = {},
+        -- stylua: ignore
+        keys = {
+            { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
+            { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+            { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+            { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+            { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
+        },
+    },
+
+    {
         "folke/snacks.nvim",
         priority = 1000,
         lazy = false,
@@ -9,7 +24,29 @@ return {
             explorer = { enabled = false },
             indent = { enabled = true },
             input = { enabled = false },
-            picker = { enabled = true },
+            picker = {
+                enabled = true,
+                layout = {
+                    cycle = true,
+                    preset = function()
+                        return "vertical"
+                    end,
+                },
+                ---@class snacks.picker.matcher.Config
+                matcher = {
+                    fuzzy = true,          -- use fuzzy matching
+                    smartcase = true,      -- use smartcase
+                    ignorecase = true,     -- use ignorecase
+                    sort_empty = false,    -- sort results when the search string is empty
+                    filename_bonus = true, -- give bonus for matching file names (last part of the path)
+                    file_pos = true,       -- support patterns like `file:line:col` and `file:line`
+                    -- the bonusses below, possibly require string concatenation and path normalization,
+                    -- so this can have a performance impact for large lists and increase memory usage
+                    cwd_bonus = true,      -- give bonus for matching files in the cwd
+                    frecency = false,      -- frecency bonus
+                    history_bonus = false, -- give more weight to chronological order
+                },
+            },
             notifier = { enabled = true },
             quickfile = { enabled = true },
             scope = { enabled = true },
