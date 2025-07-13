@@ -6,11 +6,11 @@ return {
             "nvim-lua/plenary.nvim",
             "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
             "MunifTanjim/nui.nvim",
+            "folke/snacks.nvim",
             {
                 's1n7ax/nvim-window-picker',
                 version = '2.*',
-                config = function()
-                    require 'window-picker'.setup({
+                opts = {
                         filter_rules = {
                             include_current_win = false,
                             autoselect_one = true,
@@ -19,8 +19,7 @@ return {
                                 buftype = { 'terminal', "quickfix" },
                             },
                         },
-                    })
-                end,
+                },
             },
         },
         config = function()
@@ -91,7 +90,7 @@ return {
                         nowait = true,
                     },
                     mappings = {
-                        ["<cr>"] = { "open", nowait = true },
+                        ["<cr>"] = { "open" },
                         ["<esc>"] = "cancel",
                         ["a"] = { "add", config = { show_path = "relative" } },
                         ["d"] = "delete",

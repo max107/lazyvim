@@ -25,7 +25,56 @@ return {
                         }
                     }
                 }),
+                on_attach = function(client, bufnr)
+                    -- enable formatting on save
+                    vim.api.nvim_create_autocmd("BufWritePre", {
+                        buffer = bufnr,
+                        callback = function()
+                            -- keep cursor position
+                            local v = vim.fn.winsaveview()
+                            vim.lsp.buf.format()
+                            -- restore cursor position
+                            vim.fn.winrestview(v)
+                        end,
+                    })
+                end,
             })
+
+            vim.lsp.config("eslint", {
+                cmd = { "bun", "--bun", os.getenv('HOME') .. "/.bun/bin/vscode-eslint-language-server", "--stdio" },
+                -- on_attach = function(client, bufnr)
+                --     local base_on_attach = vim.lsp.config.eslint.on_attach
+                --     if not base_on_attach then return end
+                --
+                --     base_on_attach(client, bufnr)
+                --     vim.api.nvim_create_autocmd("BufWritePre", {
+                --         buffer = bufnr,
+                --         command = "LspEslintFixAll",
+                --         callback = function()
+                --             local v = vim.fn.winsaveview()
+                --             client:request_sync('workspace/executeCommand', {
+                --                 command = 'eslint.applyAllFixes',
+                --                 arguments = {
+                --                     {
+                --                         uri = vim.uri_from_bufnr(bufnr),
+                --                         version = vim.lsp.util.buf_versions[bufnr],
+                --                     },
+                --                 },
+                --             }, nil, bufnr)
+                --             -- restore cursor position
+                --             vim.fn.winrestview(v)
+                --         end
+                --     })
+                -- end,
+            })
+
+            -- old way to format buffer
+            -- vim.api.nvim_create_autocmd("BufWritePost", {
+            --     pattern = "*",
+            --     callback = function()
+            --         vim.lsp.buf.format()
+            --     end,
+            -- })
 
             vim.lsp.config("golangci_lint_ls", {
                 init_options = {
@@ -58,8 +107,13 @@ return {
                 filetypes = { "graphql", "graphqls", "typescriptreact", "javascriptreact" }
             })
 
+            vim.lsp.config("vue_ls", {
+                cmd = { "bun", "--bun", os.getenv('HOME') .. "/.bun/bin/vue-language-server", "--stdio" },
+            })
+
             vim.lsp.config("vtsls", {
-                cmd = { "vtsls", "--stdio" },
+                cmd = { "bun", "--bun", os.getenv('HOME') .. "/.bun/bin/vtsls", "--stdio" },
+                -- cmd = { "vtsls", "--stdio" },
                 filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue" },
                 root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
                 settings = {
@@ -75,6 +129,23 @@ return {
                             },
                         },
                     },
+                    typescript = {
+                        updateImportsOnFileMove = { enabled = "always" },
+                        suggest = {
+                            completeFunctionCalls = true,
+                        },
+                        inlayHints = {
+                            enumMemberValues = { enabled = true },
+                            functionLikeReturnTypes = { enabled = true },
+                            parameterNames = { enabled = "literals" },
+                            parameterTypes = { enabled = true },
+                            propertyDeclarationTypes = { enabled = true },
+                            variableTypes = { enabled = false },
+                        },
+                    },
+                    javascript = {
+                        updateImportsOnFileMove = { enabled = "always" },
+                    }
                 },
             })
 
@@ -133,13 +204,6 @@ return {
                 'jsonls',
                 'html',
                 'eslint',
-            })
-
-            vim.api.nvim_create_autocmd("BufWritePost", {
-                pattern = "*",
-                callback = function()
-                    vim.lsp.buf.format()
-                end,
             })
 
             vim.api.nvim_create_autocmd('LspAttach', {
