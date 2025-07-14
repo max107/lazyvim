@@ -6,12 +6,50 @@ return {
     opts = {},
     -- stylua: ignore
     keys = {
-      { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
-      { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
-      { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
-      { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-      { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
     },
+  },
+
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      -- TODO fixme
+      -- @todo fix highlight
+      keywords = {
+        FIX = {
+          icon = " ", -- icon used for the sign, and in search results
+          color = "error", -- can be a hex color, or a named color (see below)
+          alt = { "FIXME", "BUG", "FIXIT", "ISSUE" }, -- a set of other keywords that all map to this FIX keywords
+          -- signs = false, -- configure signs for some keywords individually
+        },
+        TODO = { icon = " ", color = "info", alt = { "todo" } },
+        HACK = { icon = " ", color = "warning" },
+        WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
+        PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
+        NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
+        TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
+      },
+      highlight = {
+        pattern = { [[.*<(KEYWORDS)\s*]], [[.*<@(KEYWORDS)\s*]] },
+      },
+      search = {
+        pattern = [[\b(KEYWORDS)\b]], -- match without the extra colon. You'll likely get false positives
+      },
+    },
+  },
+
+  {
+    "folke/trouble.nvim",
+    opts = {},
+    cmd = "Trouble",
+    keys = {
+      {
+        "<leader>xQ",
+        "<cmd>Trouble diagnostics toggle focus=false<cr>",
+        desc = "Quickfix List (Trouble)",
+      },
+    }
   },
 
   {
@@ -75,9 +113,9 @@ return {
       -- { "<leader>n",       function() Snacks.picker.notifications() end,                           desc = "Notification History" },
       -- { "<leader>e",       function() Snacks.explorer() end,                                       desc = "File Explorer" },
       -- find
-      { "<leader>b",  function() Snacks.picker.buffers() end,               desc = "Buffers" },
-      { "<leader>f",  function() Snacks.picker.files() end,                 desc = "Find Files" },
-      { "<leader>p",  function() Snacks.picker.git_status() end,            desc = "Find Git Files" },
+      { "<leader>b",  function() Snacks.picker.buffers() end,                                                               desc = "Buffers" },
+      { "<leader>f",  function() Snacks.picker.files() end,                                                                 desc = "Find Files" },
+      { "<leader>p",  function() Snacks.picker.git_status() end,                                                            desc = "Find Git Files" },
       -- { "<leader>fp", function() Snacks.picker.projects() end,  desc = "Projects" },
       -- { "<leader>fr", function() Snacks.picker.recent() end,    desc = "Recent" },
       -- git
@@ -90,24 +128,29 @@ return {
       -- { "<leader>gf",      function() Snacks.picker.git_log_file() end,                            desc = "Git Log File" },
       -- -- Grep
       -- { "<leader>sb",      function() Snacks.picker.lines() end,                                   desc = "Buffer Lines" },
-      { "<leader>g",  function() Snacks.picker.grep() end,                  desc = "Grep" },
+      { "<leader>g",  function() Snacks.picker.grep() end,                                                                  desc = "Grep" },
       -- { "<leader>sw",      function() Snacks.picker.grep_word() end,                               desc = "Visual selection or word", mode = { "n", "x" } },
       -- -- search
       -- { '<leader>s"',      function() Snacks.picker.registers() end,                               desc = "Registers" },
       -- { "<leader>sC",      function() Snacks.picker.commands() end,                                desc = "Commands" },
-      { "<leader>sd", function() Snacks.picker.diagnostics() end,           desc = "Diagnostics" },
-      { "<leader>uC", function() Snacks.picker.colorschemes() end,          desc = "Colorschemes" },
+      { "<leader>sd", function() Snacks.picker.diagnostics() end,                                                           desc = "Diagnostics" },
+      { "<leader>uC", function() Snacks.picker.colorschemes() end,                                                          desc = "Colorschemes" },
       -- { "<leader>sD",      function() Snacks.picker.diagnostics_buffer() end,                      desc = "Buffer Diagnostics" },
-      { "<leader>sk", function() Snacks.picker.keymaps() end,               desc = "Keymaps" },
-      -- { "<leader>sm",      function() Snacks.picker.marks() end,                                   desc = "Marks" },
-      -- -- LSP
-      { "gd",         function() Snacks.picker.lsp_definitions() end,       desc = "Goto Definition" },
-      { "gD",         function() Snacks.picker.lsp_declarations() end,      desc = "Goto Declaration" },
-      { "gr",         function() Snacks.picker.lsp_references() end,        nowait = true,                  desc = "References" },
-      { "gI",         function() Snacks.picker.lsp_implementations() end,   desc = "Goto Implementation" },
-      { "gy",         function() Snacks.picker.lsp_type_definitions() end,  desc = "Goto T[y]pe Definition" },
-      { "<leader>ss", function() Snacks.picker.lsp_symbols() end,           desc = "LSP Symbols" },
-      { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+      { "<leader>sk", function() Snacks.picker.keymaps() end,                                                               desc = "Keymaps" },
+      { "<leader>sm", function() Snacks.picker.marks() end,                                                                 desc = "Marks" },
+      -- LSP
+      { "gd",         function() Snacks.picker.lsp_definitions() end,                                                       desc = "Goto Definition" },
+      { "gD",         function() Snacks.picker.lsp_declarations() end,                                                      desc = "Goto Declaration" },
+      { "gr",         function() Snacks.picker.lsp_references() end,                                                        nowait = true,                  desc = "References" },
+      { "gI",         function() Snacks.picker.lsp_implementations() end,                                                   desc = "Goto Implementation" },
+      { "gy",         function() Snacks.picker.lsp_type_definitions() end,                                                  desc = "Goto T[y]pe Definition" },
+      { "<leader>ss", function() Snacks.picker.lsp_symbols() end,                                                           desc = "LSP Symbols" },
+      { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end,                                                 desc = "LSP Workspace Symbols" },
+
+      -- todo-comments
+      { "<leader>st", function() Snacks.picker.todo_comments() end,                                                         desc = "Todo" },
+      { "<leader>sT", function() require("trouble.sources.snacks").actions.trouble_open.open({ mode = "diagnostics" }) end, desc = "Trouble" },
+
     },
   }
 }
