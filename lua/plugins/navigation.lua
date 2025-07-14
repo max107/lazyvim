@@ -34,17 +34,17 @@ return {
         },
         ---@class snacks.picker.matcher.Config
         matcher = {
-          fuzzy = true,                    -- use fuzzy matching
-          smartcase = true,                -- use smartcase
-          ignorecase = true,               -- use ignorecase
-          sort_empty = false,              -- sort results when the search string is empty
-          filename_bonus = true,           -- give bonus for matching file names (last part of the path)
-          file_pos = true,                 -- support patterns like `file:line:col` and `file:line`
+          fuzzy = true,          -- use fuzzy matching
+          smartcase = true,      -- use smartcase
+          ignorecase = true,     -- use ignorecase
+          sort_empty = false,    -- sort results when the search string is empty
+          filename_bonus = true, -- give bonus for matching file names (last part of the path)
+          file_pos = true,       -- support patterns like `file:line:col` and `file:line`
           -- the bonusses below, possibly require string concatenation and path normalization,
           -- so this can have a performance impact for large lists and increase memory usage
-          cwd_bonus = true,               -- give bonus for matching files in the cwd
-          frecency = true,                -- frecency bonus
-          history_bonus = true,           -- give more weight to chronological order
+          cwd_bonus = true,     -- give bonus for matching files in the cwd
+          frecency = true,      -- frecency bonus
+          history_bonus = true, -- give more weight to chronological order
         },
       },
       notifier = { enabled = false },
@@ -53,17 +53,17 @@ return {
       scroll = { enabled = false },
       statuscolumn = {
         enabled = true,
-        left = { "mark", "sign" },         -- priority of signs on the left (high to low)
-        right = { "fold", "git" },         -- priority of signs on the right (high to low)
+        left = { "mark", "sign" }, -- priority of signs on the left (high to low)
+        right = { "fold", "git" }, -- priority of signs on the right (high to low)
         folds = {
-          open = true,                     -- show open fold icons
-          git_hl = true,                   -- use Git Signs hl for fold icons
+          open = true,             -- show open fold icons
+          git_hl = true,           -- use Git Signs hl for fold icons
         },
         git = {
           -- patterns to match Git signs
           patterns = { "GitSign", "MiniDiffSign" },
         },
-        refresh = 50,         -- refresh at most every 50ms
+        refresh = 50, -- refresh at most every 50ms
       },
       words = { enabled = false },
     },
@@ -96,6 +96,7 @@ return {
       -- { '<leader>s"',      function() Snacks.picker.registers() end,                               desc = "Registers" },
       -- { "<leader>sC",      function() Snacks.picker.commands() end,                                desc = "Commands" },
       { "<leader>sd", function() Snacks.picker.diagnostics() end,           desc = "Diagnostics" },
+      { "<leader>uC", function() Snacks.picker.colorschemes() end,          desc = "Colorschemes" },
       -- { "<leader>sD",      function() Snacks.picker.diagnostics_buffer() end,                      desc = "Buffer Diagnostics" },
       { "<leader>sk", function() Snacks.picker.keymaps() end,               desc = "Keymaps" },
       -- { "<leader>sm",      function() Snacks.picker.marks() end,                                   desc = "Marks" },
