@@ -45,10 +45,10 @@ return {
     cmd = "Trouble",
     keys = {
       {
-        "<leader>xQ",
+        "<leader>qq",
         "<cmd>Trouble diagnostics toggle focus=false<cr>",
         desc = "Quickfix List (Trouble)",
-      },
+      }
     }
   },
 
@@ -114,7 +114,7 @@ return {
       -- { "<leader>e",       function() Snacks.explorer() end,                                       desc = "File Explorer" },
       -- find
       { "<leader>b",  function() Snacks.picker.buffers() end,                                                               desc = "Buffers" },
-      { "<leader>f",  function() Snacks.picker.files() end,                                                                 desc = "Find Files" },
+      { "<leader>f",  function() Snacks.picker.files({ hidden = true, }) end,                                               desc = "Find Files" },
       { "<leader>p",  function() Snacks.picker.git_status() end,                                                            desc = "Find Git Files" },
       -- { "<leader>fp", function() Snacks.picker.projects() end,  desc = "Projects" },
       -- { "<leader>fr", function() Snacks.picker.recent() end,    desc = "Recent" },

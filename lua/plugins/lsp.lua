@@ -245,7 +245,7 @@ return {
           enable = true,
           -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
           disable = function(_, buf)
-            local max_filesize = 1 * 1024 * 1024             -- 1 MB
+            local max_filesize = 1 * 1024 * 1024 -- 1 MB
             local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
             if ok and stats and stats.size > max_filesize then
               return true
@@ -282,9 +282,9 @@ return {
             -- and should return the mode ('v', 'V', or '<c-v>') or a table
             -- mapping query_strings to modes.
             selection_modes = {
-              ['@parameter.outer'] = 'v',               -- charwise
-              ['@function.outer'] = 'V',                -- linewise
-              ['@class.outer'] = '<c-v>',               -- blockwise
+              ['@parameter.outer'] = 'v', -- charwise
+              ['@function.outer'] = 'V',  -- linewise
+              ['@class.outer'] = '<c-v>', -- blockwise
             },
             -- If you set this to `true` (default is `false`) then any textobject is
             -- extended to include preceding or succeeding whitespace. Succeeding
