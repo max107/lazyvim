@@ -56,19 +56,26 @@ return {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
+    ---@type snacks.Config
     opts = {
+      zen = {
+        enabled = true,
+        dim = true,
+        git_signs = true,
+        mini_diff_signs = false,
+      },
       bigfile = { enabled = true },
       dashboard = { enabled = false },
       explorer = { enabled = false },
-      indent = { enabled = true },
+      indent = {
+        enabled = true
+      },
       input = { enabled = false },
       picker = {
         enabled = true,
         layout = {
           cycle = true,
-          preset = function()
-            return "vertical"
-          end,
+          preset = "vertical",
         },
         ---@class snacks.picker.matcher.Config
         matcher = {
@@ -88,6 +95,7 @@ return {
       notifier = { enabled = false },
       quickfile = { enabled = true },
       scope = { enabled = true },
+      lazygit = { enabled = true },
       scroll = { enabled = false },
       statuscolumn = {
         enabled = true,
@@ -95,7 +103,7 @@ return {
         right = { "fold", "git" }, -- priority of signs on the right (high to low)
         folds = {
           open = true,             -- show open fold icons
-          git_hl = true,           -- use Git Signs hl for fold icons
+          git_hl = false,          -- use Git Signs hl for fold icons
         },
         git = {
           -- patterns to match Git signs
@@ -160,11 +168,13 @@ return {
       { "gy",         function() Snacks.picker.lsp_type_definitions() end,                                                  desc = "Goto T[y]pe Definition" },
       { "<leader>ss", function() Snacks.picker.lsp_symbols() end,                                                           desc = "LSP Symbols" },
       { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end,                                                 desc = "LSP Workspace Symbols" },
+      -- zen mode
+      { "<leader>Z",  function() Snacks.zen() end,                                                                          desc = "Toggle zen mode" },
+      { "<leader>lg", function() Snacks.lazygit() end,                                                                      desc = "Lazygit" },
 
       -- todo-comments
       { "<leader>st", function() Snacks.picker.todo_comments() end,                                                         desc = "Todo" },
       { "<leader>sT", function() require("trouble.sources.snacks").actions.trouble_open.open({ mode = "diagnostics" }) end, desc = "Trouble" },
-
     },
   }
 }
