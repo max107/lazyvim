@@ -76,11 +76,12 @@ vim.opt.shiftwidth = 4
 vim.opt.breakindentopt = "shift:2,min:20"
 vim.opt.wrap = false
 vim.opt.linebreak = false -- Wrap on word boundary
-vim.opt.colorcolumn = "80"
+vim.opt.colorcolumn = "120"
 
-vim.o.foldlevel = 99
-vim.o.foldmethod = 'expr'
-vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldlevel = 99
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- vim.opt.foldnestmax = 4
 
 vim.opt.clipboard = "unnamedplus"
 
@@ -143,24 +144,6 @@ vim.keymap.set("n", "<leader>cc",
   ':lua for _, win in ipairs(vim.api.nvim_list_wins()) do local config = vim.api.nvim_win_get_config(win); if config.relative ~= "" then vim.api.nvim_win_close(win, false); print("Closing window", win) end end<CR>',
   { remap = false })
 
-api.nvim_create_autocmd({ "FileType" }, {
-  pattern = "yaml",
-  callback = function()
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.tabstop = 2
-    vim.opt_local.expandtab = true
-  end
-})
-
-api.nvim_create_autocmd({ "FileType" }, {
-  pattern = "scss",
-  callback = function()
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.tabstop = 2
-    vim.opt_local.expandtab = true
-  end
-})
-
 -- Stay in indent mode
 local n_opts = { silent = true, noremap = true }
 -- Normal mode
@@ -183,12 +166,12 @@ command! WQ execute ":wq"
 
 vim.cmd [[autocmd BufNewFile,BufRead *.nomad setfiletype hcl]]
 
-vim.diagnostic.config({ virtual_text = { current_line = true } })
-vim.o.winborder = 'single'
+vim.diagnostic.config({
+  virtual_text = {
+    current_line = true
+  }
+})
+vim.opt.winborder = 'single'
 
 vim.keymap.del("n", "gcc")
 vim.keymap.del("n", "gc")
--- vim.keymap.del("i", "gcc")
--- vim.keymap.del("i", "gc")
--- vim.keymap.del("v", "gcc")
--- vim.keymap.del("v", "gc")

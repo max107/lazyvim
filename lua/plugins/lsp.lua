@@ -7,40 +7,61 @@ return {
         "j-hui/fidget.nvim",
         opts = {},
       },
+      {
+        -- code formatting tool
+        "stevearc/conform.nvim",
+        opts = {
+          formatters_by_ft = {
+            lua = { "stylua" },
+            sql = { "sql_formatter" },
+            go = {
+              "goimports",
+              "gofumpt",
+              "golangci-lint",
+            },
+          },
+          format_on_save = {
+            -- These options will be passed to conform.format()
+            timeout_ms = 500,
+            -- lsp_format = "fallback",
+          },
+        },
+      },
     },
     config = function()
       vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
 
       vim.lsp.config("*", {
-        capabilities = require('blink.cmp').get_lsp_capabilities({
+        capabilities = require("blink.cmp").get_lsp_capabilities({
           textDocument = {
             completion = {
               completionItem = {
-                snippetSupport = true
+                snippetSupport = true,
               },
             },
             semanticTokens = {
-              multilineTokenSupport = true
+              multilineTokenSupport = true,
             },
             foldingRange = {
               dynamicRegistration = false,
-              lineFoldingOnly = true
-            }
-          }
+              lineFoldingOnly = true,
+            },
+          },
         }),
-        on_attach = function(client, bufnr)
-          -- enable formatting on save
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            buffer = bufnr,
-            callback = function(args)
-              -- keep cursor position
-              local v = vim.fn.winsaveview()
-              vim.lsp.buf.format()
-              -- restore cursor position
-              vim.fn.winrestview(v)
-            end,
-          })
-        end,
+        -- on_attach = function(client, bufnr)
+        --   -- enable formatting on save
+        --   vim.api.nvim_create_autocmd("BufWritePre", {
+        --     buffer = bufnr,
+        --     callback = function(args)
+        --       -- keep cursor position
+        --       local v = vim.fn.winsaveview()
+        --       -- require("conform").format({ bufnr = args.buf })
+        --       -- vim.lsp.buf.format()
+        --       -- restore cursor position
+        --       vim.fn.winrestview(v)
+        --     end,
+        --   })
+        -- end,
       })
 
       -- local base_on_attach = vim.lsp.config.eslint.on_attach
@@ -93,41 +114,49 @@ return {
       })
 
       vim.lsp.config("lua_ls", {
-        cmd = { 'lua-language-server' },
-        filetypes = { 'lua' },
-        root_markers = { '.luarc.json', '.luarc.jsonc' },
+        cmd = { "lua-language-server" },
+        filetypes = { "lua" },
+        root_markers = { ".luarc.json", ".luarc.jsonc" },
         settings = {
           Lua = {
-            runtime = { version = 'Lua 5.1' },
+            runtime = { version = "Lua 5.1" },
             diagnostics = {
-              globals = { 'bit', 'vim', 'it', 'describe', 'before_each', 'after_each' },
+              globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
             },
           },
         },
       })
 
-      vim.lsp.config('graphql', {
-        filetypes = { "graphql", "graphqls", "typescriptreact", "javascriptreact" }
+      vim.lsp.config("graphql", {
+        filetypes = { "graphql", "graphqls", "typescriptreact", "javascriptreact" },
       })
 
       vim.lsp.config("vue_ls", {
-        cmd = { "bun", "--bun", os.getenv('HOME') .. "/.bun/bin/vue-language-server", "--stdio" },
+        cmd = { "bun", "--bun", os.getenv("HOME") .. "/.bun/bin/vue-language-server", "--stdio" },
       })
 
       vim.lsp.config("vtsls", {
-        cmd = { "bun", "--bun", os.getenv('HOME') .. "/.bun/bin/vtsls", "--stdio" },
+        cmd = { "bun", "--bun", os.getenv("HOME") .. "/.bun/bin/vtsls", "--stdio" },
         -- cmd = { "vtsls", "--stdio" },
-        filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue" },
+        filetypes = {
+          "javascript",
+          "javascriptreact",
+          "javascript.jsx",
+          "typescript",
+          "typescriptreact",
+          "typescript.tsx",
+          "vue",
+        },
         root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
         settings = {
           vtsls = {
             tsserver = {
               globalPlugins = {
                 {
-                  name = '@vue/typescript-plugin',
-                  location = '/Users/max/.bun/install/global/node_modules/@vue/language-server',
-                  languages = { 'vue' },
-                  configNamespace = 'typescript',
+                  name = "@vue/typescript-plugin",
+                  location = "/Users/max/.bun/install/global/node_modules/@vue/language-server",
+                  languages = { "vue" },
+                  configNamespace = "typescript",
                 },
               },
             },
@@ -140,29 +169,31 @@ return {
           },
           javascript = {
             updateImportsOnFileMove = { enabled = "always" },
-          }
+          },
         },
       })
 
-      vim.lsp.config('terraformls', {
-        root_markers = { ".terraform", ".git", "root.tf", "main.tf", ".terraform.lock.hcl" }
+      vim.lsp.config("terraformls", {
+        root_markers = { ".terraform", ".git", "root.tf", "main.tf", ".terraform.lock.hcl" },
       })
 
-      vim.lsp.config('yamlls', {
+      vim.lsp.config("yamlls", {
         settings = {
           yaml = {
             schemas = {
               ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
-              ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] =
-              "/.gitlab-ci.yml"
+              ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = "/.gitlab-ci.yml",
             },
           },
-        }
+        },
       })
 
       vim.lsp.enable({
-        -- neovim
+        -- lua
         "lua_ls",
+
+        -- postgres
+        "postgres_lsp",
 
         -- vue, typescript
         "vtsls",
@@ -170,74 +201,77 @@ return {
 
         -- golang
         "gopls",
-        'golangci_lint_ls',
+        "golangci_lint_ls",
 
         -- docker
-        'dockerls',
-        'docker_compose_language_service',
+        "dockerls",
+        "docker_compose_language_service",
 
         -- graphql
-        'graphql',
+        "graphql",
 
         -- jsonnet (k8s, grafana)
-        'jsonnet_ls',
+        "jsonnet_ls",
 
         -- gitlab ci, github ci
-        'yamlls',
+        "yamlls",
 
         -- protobuf
-        'protols',
+        "protols",
 
         -- python
-        'basedpyright',
+        "basedpyright",
 
         -- terraform
-        'terraformls',
+        "terraformls",
 
         -- vscode language servers
-        'cssls',
-        'jsonls',
-        'html',
+        "cssls",
+        "jsonls",
+        "html",
         -- 'eslint',
       })
 
-      vim.api.nvim_create_autocmd('LspAttach', {
-        desc = 'LSP actions',
+      vim.api.nvim_create_autocmd("LspAttach", {
+        desc = "LSP actions",
         callback = function(event)
           local opts = { buffer = event.buf }
 
-          vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
-          vim.keymap.set('n', '<leader>R', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-          vim.keymap.set('n', '<leader>a', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+          vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
+          vim.keymap.set("n", "<leader>R", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
+          vim.keymap.set("n", "<leader>a", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
 
-          vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>', opts)
-          vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>', opts)
-        end
+          -- neovim go
+          vim.keymap.set("n", "<leader>tt", "<cmd>GoTestFunc<cr>", opts)
+
+          vim.keymap.set("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<cr>", opts)
+          vim.keymap.set("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<cr>", opts)
+        end,
       })
-    end
+    end,
   },
 
   {
-    'echasnovski/mini.comment',
-    version = '*',
+    "echasnovski/mini.comment",
+    version = "*",
     opts = {
       mappings = {
-        comment = '',
-        comment_line = 'gc',
-        comment_visual = 'gc',
-        textobject = 'gc',
+        comment = "",
+        comment_line = "gc",
+        comment_visual = "gc",
+        textobject = "gc",
       },
-    }
+    },
   },
 
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = 'master',
+    branch = "master",
     lazy = false,
     build = ":TSUpdate",
     event = "BufWinEnter",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects"
+      "nvim-treesitter/nvim-treesitter-textobjects",
     },
     config = function()
       require("nvim-treesitter.configs").setup({
@@ -282,9 +316,9 @@ return {
             -- and should return the mode ('v', 'V', or '<c-v>') or a table
             -- mapping query_strings to modes.
             selection_modes = {
-              ['@parameter.outer'] = 'v', -- charwise
-              ['@function.outer'] = 'V',  -- linewise
-              ['@class.outer'] = '<c-v>', -- blockwise
+              ["@parameter.outer"] = "v", -- charwise
+              ["@function.outer"] = "V", -- linewise
+              ["@class.outer"] = "<c-v>", -- blockwise
             },
             -- If you set this to `true` (default is `false`) then any textobject is
             -- extended to include preceding or succeeding whitespace. Succeeding
@@ -326,6 +360,6 @@ return {
           "yaml",
         },
       })
-    end
+    end,
   },
 }
