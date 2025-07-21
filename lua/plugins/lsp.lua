@@ -14,11 +14,13 @@ return {
           formatters_by_ft = {
             lua = { "stylua" },
             sql = { "sql_formatter" },
-            go = {
-              "goimports",
-              "gofumpt",
-              "golangci-lint",
-            },
+            vue = { "prettierd" },
+            typescript = { "prettierd" },
+            javascript = { "prettierd" },
+            css = { "prettierd" },
+            scss = { "prettierd" },
+            terraform = { "terraform_fmt" },
+            go = { "goimports", "gofumpt", "golangci-lint" },
           },
           format_on_save = {
             -- These options will be passed to conform.format()
