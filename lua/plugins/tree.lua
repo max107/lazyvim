@@ -4,19 +4,19 @@ return {
     branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",       -- not strictly required, but recommended
+      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
       "folke/snacks.nvim",
       {
-        's1n7ax/nvim-window-picker',
-        version = '2.*',
+        "s1n7ax/nvim-window-picker",
+        version = "2.*",
         opts = {
           filter_rules = {
             include_current_win = false,
             autoselect_one = true,
             bo = {
-              filetype = { 'neo-tree', "neo-tree-popup", "notify" },
-              buftype = { 'terminal', "quickfix" },
+              filetype = { "neo-tree", "neo-tree-popup", "notify" },
+              buftype = { "terminal", "quickfix" },
             },
           },
         },
@@ -28,13 +28,13 @@ return {
       vim.g.loaded_netrw = 1
 
       require("neo-tree").setup({
-        close_if_last_window = true,         -- Close Neo-tree if it is the last window left in the tab
+        close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
         use_default_mappings = false,
         popup_border_style = "single",
         enable_git_status = true,
         enable_diagnostics = true,
-        open_files_do_not_replace_types = { "terminal", "trouble", "qf" },         -- when opening files, do not use windows containing these filetypes or buftypes
-        sort_case_insensitive = true,                                              -- used when sorting files and directories in the tree
+        open_files_do_not_replace_types = { "terminal", "trouble", "qf" }, -- when opening files, do not use windows containing these filetypes or buftypes
+        sort_case_insensitive = true, -- used when sorting files and directories in the tree
         default_component_configs = {
           modified = {
             symbol = "[+]",
@@ -46,33 +46,33 @@ return {
           git_status = {
             symbols = {
               -- Change type
-              added     = "+", -- or "✚", but this is redundant info if you use git_status_colors on the name
-              modified  = ".", -- or "", but this is redundant info if you use git_status_colors on the name
-              deleted   = "", -- this can only be used in the git_status source
-              renamed   = "󰁕", -- this can only be used in the git_status source
+              added = "+", -- or "✚", but this is redundant info if you use git_status_colors on the name
+              modified = ".", -- or "", but this is redundant info if you use git_status_colors on the name
+              deleted = "", -- this can only be used in the git_status source
+              renamed = "󰁕", -- this can only be used in the git_status source
               -- Status type
               untracked = "?",
-              ignored   = "/",
-              unstaged  = "±",
-              staged    = "✓",
-              conflict  = "✗",
-            }
+              ignored = "/",
+              unstaged = "±",
+              staged = "✓",
+              conflict = "✗",
+            },
           },
           file_size = {
             enabled = true,
-            required_width = 64,             -- min width of window required to show this column
+            required_width = 64, -- min width of window required to show this column
           },
           type = {
             enabled = true,
-            required_width = 122,             -- min width of window required to show this column
+            required_width = 122, -- min width of window required to show this column
           },
           last_modified = {
             enabled = false,
-            required_width = 88,             -- min width of window required to show this column
+            required_width = 88, -- min width of window required to show this column
           },
           created = {
             enabled = false,
-            required_width = 110,             -- min width of window required to show this column
+            required_width = 110, -- min width of window required to show this column
           },
           symlink_target = {
             enabled = false,
@@ -108,7 +108,7 @@ return {
 
             ["l"] = "open",
             ["<Right>"] = "open",
-          }
+          },
         },
         filesystem = {
           filtered_items = {
@@ -120,15 +120,14 @@ return {
               "node_modules",
               "htmlcov",
               "venv",
-              "vendor",
               ".idea",
               ".git",
             },
             never_show = {
               ".DS_Store",
-              "thumbs.db"
+              "thumbs.db",
             },
-            never_show_by_pattern = {             -- uses glob style patterns
+            never_show_by_pattern = { -- uses glob style patterns
               --".null-ls_*",
             },
           },
@@ -145,7 +144,7 @@ return {
               ["."] = "set_root",
               ["H"] = "toggle_hidden",
             },
-            fuzzy_finder_mappings = {             -- define keymaps for filter popup window in fuzzy_finder_mode
+            fuzzy_finder_mappings = { -- define keymaps for filter popup window in fuzzy_finder_mode
               ["<down>"] = "move_cursor_down",
               ["<C-n>"] = "move_cursor_down",
               ["<up>"] = "move_cursor_up",
@@ -153,7 +152,7 @@ return {
             },
           },
 
-          commands = {}           -- Add a custom command or override a global one using the same function name
+          commands = {}, -- Add a custom command or override a global one using the same function name
         },
         buffers = {},
       })
@@ -162,6 +161,6 @@ return {
 
       vim.api.nvim_set_keymap("n", "<C-n>", "<cmd>Neotree filesystem reveal toggle current<CR>", opts)
       vim.api.nvim_set_keymap("n", "<C-g>", "<cmd>Neotree git_status toggle current<CR>", opts)
-    end
+    end,
   },
 }

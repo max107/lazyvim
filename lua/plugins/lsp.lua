@@ -19,6 +19,8 @@ return {
             javascript = { "prettierd" },
             css = { "prettierd" },
             scss = { "prettierd" },
+            python = { "ruff_format" },
+            toml = { "taplo" },
             terraform = { "terraform_fmt" },
             go = { "goimports", "gofumpt", "golangci-lint" },
           },
@@ -28,11 +30,14 @@ return {
             -- lsp_format = "fallback",
           },
         },
+        config = function(_, opts)
+          require("conform").setup(opts)
+
+          vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+        end,
       },
     },
     config = function()
-      vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-
       vim.lsp.config("*", {
         capabilities = require("blink.cmp").get_lsp_capabilities({
           textDocument = {
@@ -226,6 +231,7 @@ return {
 
         -- terraform
         "terraformls",
+        "tflint",
 
         -- vscode language servers
         "cssls",
@@ -276,6 +282,9 @@ return {
       "nvim-treesitter/nvim-treesitter-textobjects",
     },
     config = function()
+      vim.opt.foldmethod = "expr"
+      vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+
       require("nvim-treesitter.configs").setup({
         highlight = {
           enable = true,

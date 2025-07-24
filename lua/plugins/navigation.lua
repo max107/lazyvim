@@ -53,8 +53,8 @@ return {
         "<leader>qq",
         "<cmd>Trouble diagnostics toggle focus=false<cr>",
         desc = "Quickfix List (Trouble)",
-      }
-    }
+      },
+    },
   },
 
   {
@@ -73,7 +73,7 @@ return {
       dashboard = { enabled = false },
       explorer = { enabled = false },
       indent = {
-        enabled = true
+        enabled = true,
       },
       input = { enabled = false },
       picker = {
@@ -84,16 +84,16 @@ return {
         },
         ---@class snacks.picker.matcher.Config
         matcher = {
-          fuzzy = true,          -- use fuzzy matching
-          smartcase = true,      -- use smartcase
-          ignorecase = true,     -- use ignorecase
-          sort_empty = false,    -- sort results when the search string is empty
+          fuzzy = true, -- use fuzzy matching
+          smartcase = true, -- use smartcase
+          ignorecase = true, -- use ignorecase
+          sort_empty = false, -- sort results when the search string is empty
           filename_bonus = true, -- give bonus for matching file names (last part of the path)
-          file_pos = true,       -- support patterns like `file:line:col` and `file:line`
+          file_pos = true, -- support patterns like `file:line:col` and `file:line`
           -- the bonusses below, possibly require string concatenation and path normalization,
           -- so this can have a performance impact for large lists and increase memory usage
-          cwd_bonus = true,     -- give bonus for matching files in the cwd
-          frecency = true,      -- frecency bonus
+          cwd_bonus = true, -- give bonus for matching files in the cwd
+          frecency = true, -- frecency bonus
           history_bonus = true, -- give more weight to chronological order
         },
       },
@@ -107,8 +107,8 @@ return {
         left = { "mark", "sign" }, -- priority of signs on the left (high to low)
         right = { "fold", "git" }, -- priority of signs on the right (high to low)
         folds = {
-          open = true,             -- show open fold icons
-          git_hl = false,          -- use Git Signs hl for fold icons
+          open = true, -- show open fold icons
+          git_hl = false, -- use Git Signs hl for fold icons
         },
         git = {
           -- patterns to match Git signs
@@ -126,23 +126,40 @@ return {
       -- { "<leader>n",       function() Snacks.picker.notifications() end,                           desc = "Notification History" },
       -- { "<leader>e",       function() Snacks.explorer() end,                                       desc = "File Explorer" },
       -- find
-      { "<leader>b",  function() Snacks.picker.buffers() end,               desc = "Buffers" },
+      {
+        "<leader>b",
+        function()
+          Snacks.picker.buffers()
+        end,
+        desc = "Buffers",
+      },
       {
         "<leader>f",
         function()
           Snacks.picker.files({
             hidden = true,
             exclude = {
-              'test/',
-              'node_modules/',
-              'vendor/',
-              '/__mocks__/'
-            }
+              "test/",
+              "node_modules/",
+              "vendor/",
+              "/__mocks__/",
+            },
           })
         end,
-        desc = "Find Files"
+        desc = "Find Files",
       },
-      { "<leader>p",  function() Snacks.picker.git_status() end,            desc = "Find Git Files" },
+      {
+        "<leader>p",
+        function()
+          Snacks.picker.git_status({
+            exclude = {
+              "node_modules/",
+              "vendor/",
+            },
+          })
+        end,
+        desc = "Find Git Files",
+      },
       -- { "<leader>fp", function() Snacks.picker.projects() end,  desc = "Projects" },
       -- { "<leader>fr", function() Snacks.picker.recent() end,    desc = "Recent" },
       -- git
@@ -155,31 +172,122 @@ return {
       -- { "<leader>gf",      function() Snacks.picker.git_log_file() end,                            desc = "Git Log File" },
       -- -- Grep
       -- { "<leader>sb",      function() Snacks.picker.lines() end,                                   desc = "Buffer Lines" },
-      { "<leader>g",  function() Snacks.picker.grep() end,                  desc = "Grep" },
+      {
+        "<leader>g",
+        function()
+          Snacks.picker.grep()
+        end,
+        desc = "Grep",
+      },
       -- { "<leader>sw",      function() Snacks.picker.grep_word() end,                               desc = "Visual selection or word", mode = { "n", "x" } },
       -- -- search
       -- { '<leader>s"',      function() Snacks.picker.registers() end,                               desc = "Registers" },
       -- { "<leader>sC",      function() Snacks.picker.commands() end,                                desc = "Commands" },
-      { "<leader>sd", function() Snacks.picker.diagnostics() end,           desc = "Diagnostics" },
-      { "<leader>uC", function() Snacks.picker.colorschemes() end,          desc = "Colorschemes" },
+      {
+        "<leader>sd",
+        function()
+          Snacks.picker.diagnostics()
+        end,
+        desc = "Diagnostics",
+      },
+      {
+        "<leader>uC",
+        function()
+          Snacks.picker.colorschemes()
+        end,
+        desc = "Colorschemes",
+      },
       -- { "<leader>sD",      function() Snacks.picker.diagnostics_buffer() end,                      desc = "Buffer Diagnostics" },
-      { "<leader>sk", function() Snacks.picker.keymaps() end,               desc = "Keymaps" },
-      { "<leader>sm", function() Snacks.picker.marks() end,                 desc = "Marks" },
+      {
+        "<leader>sk",
+        function()
+          Snacks.picker.keymaps()
+        end,
+        desc = "Keymaps",
+      },
+      {
+        "<leader>sm",
+        function()
+          Snacks.picker.marks()
+        end,
+        desc = "Marks",
+      },
       -- LSP
-      { "gd",         function() Snacks.picker.lsp_definitions() end,       desc = "Goto Definition" },
-      { "gD",         function() Snacks.picker.lsp_declarations() end,      desc = "Goto Declaration" },
-      { "gr",         function() Snacks.picker.lsp_references() end,        nowait = true,                  desc = "References" },
-      { "gI",         function() Snacks.picker.lsp_implementations() end,   desc = "Goto Implementation" },
-      { "gy",         function() Snacks.picker.lsp_type_definitions() end,  desc = "Goto T[y]pe Definition" },
-      { "<leader>ss", function() Snacks.picker.lsp_symbols() end,           desc = "LSP Symbols" },
-      { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
+      {
+        "gd",
+        function()
+          Snacks.picker.lsp_definitions()
+        end,
+        desc = "Goto Definition",
+      },
+      {
+        "gD",
+        function()
+          Snacks.picker.lsp_declarations()
+        end,
+        desc = "Goto Declaration",
+      },
+      {
+        "gr",
+        function()
+          Snacks.picker.lsp_references()
+        end,
+        nowait = true,
+        desc = "References",
+      },
+      {
+        "gI",
+        function()
+          Snacks.picker.lsp_implementations()
+        end,
+        desc = "Goto Implementation",
+      },
+      {
+        "gy",
+        function()
+          Snacks.picker.lsp_type_definitions()
+        end,
+        desc = "Goto T[y]pe Definition",
+      },
+      {
+        "<leader>ss",
+        function()
+          Snacks.picker.lsp_symbols()
+        end,
+        desc = "LSP Symbols",
+      },
+      {
+        "<leader>sS",
+        function()
+          Snacks.picker.lsp_workspace_symbols()
+        end,
+        desc = "LSP Workspace Symbols",
+      },
 
       -- zen mode
-      { "<leader>Z",  function() Snacks.zen() end,                          desc = "Toggle zen mode" },
-      { "<leader>lg", function() Snacks.lazygit() end,                      desc = "Lazygit" },
+      {
+        "<leader>Z",
+        function()
+          Snacks.zen()
+        end,
+        desc = "Toggle zen mode",
+      },
+      {
+        "<leader>lg",
+        function()
+          Snacks.lazygit()
+        end,
+        desc = "Lazygit",
+      },
 
       -- todo-comments
-      { "<leader>st", function() Snacks.picker.todo_comments() end,         desc = "Todo" },
+      {
+        "<leader>st",
+        function()
+          Snacks.picker.todo_comments()
+        end,
+        desc = "Todo",
+      },
     },
-  }
+  },
 }

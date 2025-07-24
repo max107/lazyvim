@@ -20,7 +20,7 @@ vim.opt.virtualedit = "block"
 vim.opt.encoding = "utf-8"
 vim.opt.wildignorecase = true
 vim.opt.wildignore =
-".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/vendor/**"
+  ".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/vendor/**"
 vim.opt.backup = false
 vim.opt.writebackup = false
 vim.opt.swapfile = false
@@ -79,9 +79,7 @@ vim.opt.linebreak = false -- Wrap on word boundary
 vim.opt.colorcolumn = "120"
 
 vim.opt.foldlevel = 99
-vim.opt.foldmethod = 'expr'
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
--- vim.opt.foldnestmax = 4
+vim.opt.foldnestmax = 4
 
 vim.opt.clipboard = "unnamedplus"
 
@@ -140,15 +138,18 @@ api.nvim_create_autocmd(
 )
 
 -- kill all floating windows
-vim.keymap.set("n", "<leader>cc",
+vim.keymap.set(
+  "n",
+  "<leader>cc",
   ':lua for _, win in ipairs(vim.api.nvim_list_wins()) do local config = vim.api.nvim_win_get_config(win); if config.relative ~= "" then vim.api.nvim_win_close(win, false); print("Closing window", win) end end<CR>',
-  { remap = false })
+  { remap = false }
+)
 
 -- Stay in indent mode
 local n_opts = { silent = true, noremap = true }
 -- Normal mode
-vim.keymap.set('n', '<', '<<', n_opts)
-vim.keymap.set('n', '>', '>>', n_opts)
+vim.keymap.set("n", "<", "<<", n_opts)
+vim.keymap.set("n", ">", ">>", n_opts)
 -- Visual --
 vim.keymap.set("v", "<", "<gv", n_opts)
 vim.keymap.set("v", ">", ">gv", n_opts)
@@ -158,20 +159,31 @@ vim.keymap.set("n", "gn", ":bnext<cr>", n_opts)
 vim.keymap.set("v", "gp", ":bprev<cr>", n_opts)
 vim.keymap.set("v", "gn", ":bnext<cr>", n_opts)
 
-vim.cmd [[
+vim.keymap.set("n", "<leader>ka", function()
+  -- close all popup windows
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local config = vim.api.nvim_win_get_config(win)
+    if config.relative ~= "" then
+      vim.api.nvim_win_close(win, false)
+      print("Closing window", win)
+    end
+  end
+end, n_opts)
+
+vim.cmd([[
 command! W execute ":w"
 command! Wq execute ":wq"
 command! WQ execute ":wq"
-]]
+]])
 
-vim.cmd [[autocmd BufNewFile,BufRead *.nomad setfiletype hcl]]
+vim.cmd([[autocmd BufNewFile,BufRead *.nomad setfiletype hcl]])
 
 vim.diagnostic.config({
   virtual_text = {
-    current_line = true
-  }
+    current_line = true,
+  },
 })
-vim.opt.winborder = 'single'
+vim.opt.winborder = "single"
 
 vim.keymap.del("n", "gcc")
 vim.keymap.del("n", "gc")
