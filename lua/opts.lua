@@ -159,8 +159,11 @@ vim.keymap.set("n", "gn", ":bnext<cr>", n_opts)
 vim.keymap.set("v", "gp", ":bprev<cr>", n_opts)
 vim.keymap.set("v", "gn", ":bnext<cr>", n_opts)
 
+-- use leader with w for save file
+vim.keymap.set("n", "<leader>w", ":w<cr>", n_opts)
+
+-- close all popup windows
 vim.keymap.set("n", "<leader>ka", function()
-  -- close all popup windows
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local config = vim.api.nvim_win_get_config(win)
     if config.relative ~= "" then
