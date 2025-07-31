@@ -78,10 +78,10 @@ return {
       input = { enabled = false },
       picker = {
         enabled = true,
-        layout = {
-          cycle = true,
-          preset = "vertical",
-        },
+        -- layout = {
+        --   cycle = true,
+        --   preset = "vertical",
+        -- },
         ---@class snacks.picker.matcher.Config
         matcher = {
           fuzzy = true, -- use fuzzy matching
