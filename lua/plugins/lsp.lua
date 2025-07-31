@@ -18,7 +18,9 @@ return {
             typescript = { "prettierd" },
             javascript = { "prettierd" },
             css = { "prettierd" },
+            templ = { "templ" },
             scss = { "prettierd" },
+            html = { "prettierd" },
             python = { "ruff_format" },
             toml = { "taplo" },
             terraform = { "terraform_fmt" },
@@ -209,6 +211,7 @@ return {
         -- golang
         "gopls",
         "golangci_lint_ls",
+        "templ",
 
         -- docker
         "dockerls",
@@ -364,6 +367,7 @@ return {
           "proto",
           "scss",
           "sql",
+          "templ",
           "terraform",
           "toml",
           "typescript",
