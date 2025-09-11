@@ -18,6 +18,9 @@ return {
             typescript = { "prettierd" },
             javascript = { "prettierd" },
             css = { "prettierd" },
+            graphql = { "prettierd" },
+            json = { "prettierd" },
+            yaml = { "prettierd" },
             templ = { "templ" },
             scss = { "prettierd" },
             html = { "prettierd" },
@@ -28,6 +31,8 @@ return {
           },
           format_on_save = {
             -- These options will be passed to conform.format()
+            async = false,
+            lsp_fallback = false,
             timeout_ms = 500,
             -- lsp_format = "fallback",
           },
@@ -38,6 +43,9 @@ return {
           vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
         end,
       },
+    },
+    opts = {
+      inlay_hints = { enabled = false },
     },
     config = function()
       vim.lsp.config("*", {
@@ -57,57 +65,7 @@ return {
             },
           },
         }),
-        -- on_attach = function(client, bufnr)
-        --   -- enable formatting on save
-        --   vim.api.nvim_create_autocmd("BufWritePre", {
-        --     buffer = bufnr,
-        --     callback = function(args)
-        --       -- keep cursor position
-        --       local v = vim.fn.winsaveview()
-        --       -- require("conform").format({ bufnr = args.buf })
-        --       -- vim.lsp.buf.format()
-        --       -- restore cursor position
-        --       vim.fn.winrestview(v)
-        --     end,
-        --   })
-        -- end,
       })
-
-      -- local base_on_attach = vim.lsp.config.eslint.on_attach
-      -- vim.lsp.config("eslint", {
-      --     cmd = { "bun", "--bun", os.getenv('HOME') .. "/.bun/bin/vscode-eslint-language-server", "--stdio" },
-      --     on_attach = function(client, bufnr)
-      --         if not base_on_attach then return end
-      --
-      --         base_on_attach(client, bufnr)
-      --         vim.api.nvim_create_autocmd("BufWritePre", {
-      --             buffer = bufnr,
-      --             -- command = "LspEslintFixAll",
-      --             callback = function()
-      --                 local v = vim.fn.winsaveview()
-      --                 client:request_sync('workspace/executeCommand', {
-      --                     command = 'eslint.applyAllFixes',
-      --                     arguments = {
-      --                         {
-      --                             uri = vim.uri_from_bufnr(bufnr),
-      --                             version = vim.lsp.util.buf_versions[bufnr],
-      --                         },
-      --                     },
-      --                 }, nil, bufnr)
-      --                 -- restore cursor position
-      --                 vim.fn.winrestview(v)
-      --             end
-      --         })
-      --     end,
-      -- })
-
-      -- old way to format buffer
-      -- vim.api.nvim_create_autocmd("BufWritePost", {
-      --     pattern = "*",
-      --     callback = function()
-      --         vim.lsp.buf.format()
-      --     end,
-      -- })
 
       vim.lsp.config("golangci_lint_ls", {
         init_options = {

@@ -81,6 +81,17 @@ vim.opt.colorcolumn = "120"
 vim.opt.foldlevel = 99
 vim.opt.foldnestmax = 4
 
+vim.diagnostic.config({
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+  virtual_text = false,
+  virtual_lines = false,
+  -- virtual_text = { current_line = false },
+  -- virtual_lines = { current_line = false },
+})
+
 vim.opt.clipboard = "unnamedplus"
 
 if vim.loop.os_uname().sysname == "Darwin" then
