@@ -1,5 +1,15 @@
 return {
   {
+    "grafana/vim-alloy",
+    config = function()
+      vim.filetype.add({
+        extension = {
+          alloy = "alloy",
+        },
+      })
+    end,
+  },
+  {
     "neovim/nvim-lspconfig",
     dependencies = {
       {
