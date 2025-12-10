@@ -1,5 +1,9 @@
 return {
   {
+    "terrastruct/d2-vim",
+    ft = { "d2" },
+  },
+  {
     "grafana/vim-alloy",
     config = function()
       vim.filetype.add({
@@ -35,6 +39,8 @@ return {
             scss = { "prettierd" },
             html = { "prettierd" },
             python = { "ruff_format" },
+            nix = { "nixfmt" },
+            hcl = { "hcl" },
             toml = { "taplo" },
             terraform = { "terraform_fmt" },
             go = { "goimports", "gofumpt", "golangci-lint" },
