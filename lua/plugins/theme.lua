@@ -1,16 +1,45 @@
 return {
   {
+    "brenoprata10/nvim-highlight-colors",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      require("nvim-highlight-colors").setup({
+        render = "background",
+        enable_hex = true,
+        enable_short_hex = true,
+        enable_rgb = true,
+        enable_hsl = true,
+        enable_var_usage = true,
+        enable_named_colors = true,
+        enable_tailwind = false,
+        custom_colors = nil,
+        exclude_filetypes = {
+          "dashboard",
+          "NvimTree",
+          "lazy",
+          "mason",
+          "help",
+          "terminal",
+          "packer",
+          "lspinfo",
+          "TelescopePrompt",
+          "TelescopeResults",
+        },
+      })
+    end,
+  },
+
+  {
     "sainnhe/sonokai",
     lazy = false,
     priority = 1000,
     config = function()
-      vim.cmd [[
+      vim.cmd([[
         let g:sonokai_transparent_background = 1
         colorscheme sonokai
-      ]]
-    end
+      ]])
+    end,
   },
-
 
   -- {
   --   "projekt0n/github-nvim-theme",
@@ -54,17 +83,17 @@ return {
   -- },
 
   {
-    'akinsho/bufferline.nvim',
+    "akinsho/bufferline.nvim",
     version = "*",
-    dependencies = 'nvim-tree/nvim-web-devicons',
+    dependencies = "nvim-tree/nvim-web-devicons",
     opts = {
       options = {
         diagnostics = "nvim_lsp",
         separator_style = { "", "" },
-        modified_icon = '!',
+        modified_icon = "!",
         show_close_icon = false,
         show_buffer_close_icons = false,
-      }
-    }
+      },
+    },
   },
 }

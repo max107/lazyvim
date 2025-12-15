@@ -44,16 +44,35 @@ return {
     },
   },
 
+  -- {
+  --   "folke/trouble.nvim",
+  --   opts = {},
+  --   cmd = "Trouble",
+  --   keys = {
+  --     {
+  --       "<leader>qq",
+  --       "<cmd>Trouble diagnostics toggle focus=false<cr>",
+  --       desc = "Quickfix List (Trouble)",
+  --     },
+  --   },
+  -- },
   {
     "folke/trouble.nvim",
-    opts = {},
+    dependencies = { "nvim-tree/nvim-web-devicons", "folke/todo-comments.nvim" },
+    opts = {
+      focus = true,
+    },
     cmd = "Trouble",
     keys = {
+      { "<leader>tt", "<cmd>Trouble diagnostics toggle<CR>", desc = "Open trouble workspace diagnostics" },
       {
-        "<leader>qq",
-        "<cmd>Trouble diagnostics toggle focus=false<cr>",
-        desc = "Quickfix List (Trouble)",
+        "<leader>tb",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<CR>",
+        desc = "Open trouble document diagnostics",
       },
+      { "<leader>tq", "<cmd>Trouble quickfix toggle<CR>", desc = "Open trouble quickfix list" },
+      { "<leader>tl", "<cmd>Trouble loclist toggle<CR>", desc = "Open trouble location list" },
+      { "<leader>td", "<cmd>Trouble todo toggle<CR>", desc = "Open todos in trouble" },
     },
   },
 
