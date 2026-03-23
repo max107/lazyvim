@@ -95,17 +95,12 @@ vim.keymap.del("n", "gcc")
 vim.keymap.del("n", "gc")
 
 vim.diagnostic.config({
-  -- virtual_text = {
-  --   current_line = true,
-  -- },
-  -- virtual_text = false,
-  signs = true,
+  signs = false,
   underline = true,
   update_in_insert = false,
   severity_sort = true,
-  -- virtual_lines = true,
-  virtual_text = { current_line = false },
-  virtual_lines = { current_line = false },
+  virtual_lines = false,
+  virtual_text = false,
 })
 
 vim.opt.clipboard = "unnamedplus"
@@ -414,6 +409,7 @@ local plugins = {
     "terrastruct/d2-vim",
     ft = { "d2" },
   },
+
   {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
@@ -432,6 +428,7 @@ local plugins = {
       })
     end,
   },
+
   {
     "grafana/vim-alloy",
     config = function()
@@ -459,16 +456,15 @@ local plugins = {
             sql = { "sql_formatter" },
             vue = { "prettierd" },
             typescript = { "prettierd" },
-            javascript = { "prettierd" },
+            -- javascript = { "prettierd" },
             css = { "prettierd" },
             graphql = { "prettierd" },
             json = { "prettierd" },
             yaml = { "prettierd" },
-            templ = { "templ" },
             scss = { "prettierd" },
             html = { "prettierd" },
             python = { "ruff_format" },
-            nix = { "nixfmt" },
+            -- nix = { "nixfmt" },
             hcl = { "hcl" },
             toml = { "taplo" },
             terraform = { "terraform_fmt" },
@@ -476,9 +472,9 @@ local plugins = {
           },
           format_on_save = {
             -- These options will be passed to conform.format()
-            async = false,
-            lsp_fallback = false,
-            timeout_ms = 500,
+            -- async = false,
+            -- lsp_fallback = false,
+            -- timeout_ms = 500,
             -- lsp_format = "fallback",
           },
         },
@@ -488,9 +484,6 @@ local plugins = {
           vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
         end,
       },
-    },
-    opts = {
-      inlay_hints = { enabled = false },
     },
     config = function()
       vim.lsp.config("*", {
@@ -511,6 +504,74 @@ local plugins = {
           },
         }),
       })
+
+      ---------------------------------- vue typescript
+
+      local vue_language_server_path = "/Users/max/.bun/install/global/node_modules/@vue/language-server"
+      local tsserver_filetypes = {
+        "typescript",
+        "javascript",
+        "javascriptreact",
+        "typescriptreact",
+        "vue",
+      }
+
+      local vue_plugin = {
+        name = "@vue/typescript-plugin",
+        location = vue_language_server_path,
+        languages = { "vue" },
+        configNamespace = "typescript",
+        enableForWorkspaceTypeScriptVersions = true,
+      }
+      vim.lsp.config("ts_ls", {
+        filetypes = tsserver_filetypes,
+        init_options = {
+          plugins = { vue_plugin },
+        },
+      })
+
+      vim.lsp.config("vue_ls", {
+        cmd = { "bun", "--bun", os.getenv("HOME") .. "/.bun/bin/vue-language-server", "--stdio" },
+      })
+
+      vim.lsp.config("vtsls", {
+        cmd = { "bun", "--bun", os.getenv("HOME") .. "/.bun/bin/vtsls", "--stdio" },
+        filetypes = tsserver_filetypes,
+        -- cmd = { "vtsls", "--stdio" },
+        root_markers = {
+          "tsconfig.json",
+          "package.json",
+          ".git",
+        },
+        settings = {
+          vtsls = {
+            tsserver = {
+              globalPlugins = {
+                vue_plugin,
+              },
+            },
+          },
+          typescript = {
+            updateImportsOnFileMove = { enabled = "always" },
+            suggest = {
+              completeFunctionCalls = true,
+            },
+            inlayHints = {
+              enumMemberValues = { enabled = true },
+              functionLikeReturnTypes = { enabled = true },
+              parameterNames = { enabled = "literals" },
+              parameterTypes = { enabled = true },
+              propertyDeclarationTypes = { enabled = true },
+              variableTypes = { enabled = false },
+            },
+          },
+          javascript = {
+            updateImportsOnFileMove = { enabled = "always" },
+          },
+        },
+      })
+
+      ---------------------------------- vue typescript
 
       vim.lsp.config("golangci_lint_ls", {
         init_options = {
@@ -543,50 +604,14 @@ local plugins = {
         filetypes = { "graphql", "graphqls", "typescriptreact", "javascriptreact" },
       })
 
-      vim.lsp.config("vue_ls", {
-        cmd = { "bun", "--bun", os.getenv("HOME") .. "/.bun/bin/vue-language-server", "--stdio" },
-      })
-
-      vim.lsp.config("vtsls", {
-        cmd = { "bun", "--bun", os.getenv("HOME") .. "/.bun/bin/vtsls", "--stdio" },
-        -- cmd = { "vtsls", "--stdio" },
-        filetypes = {
-          "javascript",
-          "javascriptreact",
-          "javascript.jsx",
-          "typescript",
-          "typescriptreact",
-          "typescript.tsx",
-          "vue",
-        },
-        root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
-        settings = {
-          vtsls = {
-            tsserver = {
-              globalPlugins = {
-                {
-                  name = "@vue/typescript-plugin",
-                  location = "/Users/max/.bun/install/global/node_modules/@vue/language-server",
-                  languages = { "vue" },
-                  configNamespace = "typescript",
-                },
-              },
-            },
-          },
-          typescript = {
-            updateImportsOnFileMove = { enabled = "always" },
-            suggest = {
-              completeFunctionCalls = true,
-            },
-          },
-          javascript = {
-            updateImportsOnFileMove = { enabled = "always" },
-          },
-        },
-      })
-
       vim.lsp.config("terraformls", {
-        root_markers = { ".terraform", ".git", "root.tf", "main.tf", ".terraform.lock.hcl" },
+        root_markers = {
+          ".terraform",
+          ".git",
+          "root.tf",
+          "main.tf",
+          ".terraform.lock.hcl",
+        },
       })
 
       vim.lsp.config("yamlls", {
@@ -614,7 +639,6 @@ local plugins = {
         -- golang
         "gopls",
         "golangci_lint_ls",
-        "templ",
 
         -- docker
         "dockerls",
@@ -753,7 +777,7 @@ local plugins = {
           "astro",
           "bash",
           "css",
-          "dockerfile",
+          -- "dockerfile",
           "fish",
           "go",
           "graphql",
@@ -770,7 +794,6 @@ local plugins = {
           "proto",
           "scss",
           "sql",
-          "templ",
           "terraform",
           "toml",
           "typescript",
@@ -780,6 +803,7 @@ local plugins = {
       })
     end,
   },
+
   -- {
   --   "folke/flash.nvim",
   --   event = "VeryLazy",
@@ -797,63 +821,47 @@ local plugins = {
   -- },
 
   {
-    "folke/todo-comments.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    opts = {
-      -- TODO fixme
-      -- @todo fix highlight
-      keywords = {
-        FIX = {
-          icon = " ", -- icon used for the sign, and in search results
-          color = "error", -- can be a hex color, or a named color (see below)
-          alt = { "FIXME", "BUG", "FIXIT", "ISSUE" }, -- a set of other keywords that all map to this FIX keywords
-          -- signs = false, -- configure signs for some keywords individually
-        },
-        TODO = { icon = " ", color = "info", alt = { "todo" } },
-        HACK = { icon = " ", color = "warning" },
-        WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
-        PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
-        NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
-        TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
-      },
-      highlight = {
-        pattern = { [[.*<(KEYWORDS)\s*]], [[.*<@(KEYWORDS)\s*]] },
-      },
-      search = {
-        pattern = [[\b(KEYWORDS)\b]], -- match without the extra colon. You'll likely get false positives
+    "folke/trouble.nvim",
+    opts = {},
+    cmd = "Trouble",
+    keys = {
+      {
+        "<leader>qq",
+        -- "<cmd>Trouble diagnostics toggle focus=false<cr>",
+        "<cmd>Trouble diagnostics toggle focus=false win.position=right<cr>",
+        desc = "Quickfix List (Trouble)",
       },
     },
   },
 
-  -- {
-  --   "folke/trouble.nvim",
-  --   opts = {},
-  --   cmd = "Trouble",
-  --   keys = {
-  --     {
-  --       "<leader>qq",
-  --       "<cmd>Trouble diagnostics toggle focus=false<cr>",
-  --       desc = "Quickfix List (Trouble)",
-  --     },
-  --   },
-  -- },
   {
     "folke/trouble.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons", "folke/todo-comments.nvim" },
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+      "folke/todo-comments.nvim",
+    },
     opts = {
       focus = true,
+      modes = {
+        mydiags = {
+          mode = "diagnostics", -- inherit from diagnostics mode
+          filter = {
+            any = {
+              buf = 0, -- current buffer
+              {
+                severity = vim.diagnostic.severity.ERROR, -- errors only
+                function(item)
+                  return item.filename:find((vim.loop or vim.uv).cwd(), 1, true)
+                end,
+              },
+            },
+          },
+        },
+      },
     },
     cmd = "Trouble",
     keys = {
-      { "<leader>tt", "<cmd>Trouble diagnostics toggle<CR>", desc = "Open trouble workspace diagnostics" },
-      {
-        "<leader>tb",
-        "<cmd>Trouble diagnostics toggle filter.buf=0<CR>",
-        desc = "Open trouble document diagnostics",
-      },
-      { "<leader>tq", "<cmd>Trouble quickfix toggle<CR>", desc = "Open trouble quickfix list" },
-      { "<leader>tl", "<cmd>Trouble loclist toggle<CR>", desc = "Open trouble location list" },
-      { "<leader>td", "<cmd>Trouble todo toggle<CR>", desc = "Open todos in trouble" },
+      { "<leader>tt", "<cmd>Trouble mydiags toggle<CR>", desc = "Open trouble workspace diagnostics" },
     },
   },
 
@@ -1092,41 +1100,41 @@ local plugins = {
   },
   { "google/vim-jsonnet" },
   { "Joorem/vim-haproxy" },
-  {
-    "akinsho/bufferline.nvim",
-    version = "*",
-    dependencies = "nvim-tree/nvim-web-devicons",
-    opts = {},
-  },
-  {
-    "brenoprata10/nvim-highlight-colors",
-    event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      require("nvim-highlight-colors").setup({
-        render = "background",
-        enable_hex = true,
-        enable_short_hex = true,
-        enable_rgb = true,
-        enable_hsl = true,
-        enable_var_usage = true,
-        enable_named_colors = true,
-        enable_tailwind = false,
-        custom_colors = nil,
-        exclude_filetypes = {
-          "dashboard",
-          "NvimTree",
-          "lazy",
-          "mason",
-          "help",
-          "terminal",
-          "packer",
-          "lspinfo",
-          "TelescopePrompt",
-          "TelescopeResults",
-        },
-      })
-    end,
-  },
+  -- {
+  --   "akinsho/bufferline.nvim",
+  --   version = "*",
+  --   dependencies = "nvim-tree/nvim-web-devicons",
+  --   opts = {},
+  -- },
+  -- {
+  --   "brenoprata10/nvim-highlight-colors",
+  --   event = { "BufReadPre", "BufNewFile" },
+  --   config = function()
+  --     require("nvim-highlight-colors").setup({
+  --       render = "background",
+  --       enable_hex = true,
+  --       enable_short_hex = true,
+  --       enable_rgb = true,
+  --       enable_hsl = true,
+  --       enable_var_usage = true,
+  --       enable_named_colors = true,
+  --       enable_tailwind = false,
+  --       custom_colors = nil,
+  --       exclude_filetypes = {
+  --         "dashboard",
+  --         "NvimTree",
+  --         "lazy",
+  --         "mason",
+  --         "help",
+  --         "terminal",
+  --         "packer",
+  --         "lspinfo",
+  --         "TelescopePrompt",
+  --         "TelescopeResults",
+  --       },
+  --     })
+  --   end,
+  -- },
   {
     "sainnhe/sonokai",
     lazy = false,
@@ -1144,39 +1152,27 @@ local plugins = {
   --   priority = 1000,
   --   opts = {
   --     set_dark_mode = function()
-  --       vim.cmd("colorscheme sonokai")
+  --       vim.cmd("colorscheme nightfox")
   --     end,
   --     set_light_mode = function()
-  --       vim.cmd("colorscheme github_light_default")
+  --       vim.cmd("colorscheme dayfox")
   --     end,
   --     update_interval = 3000,
-  --     fallback = "dark",
+  --     fallback = "light",
   --   },
   -- },
   -- {
-  --   "projekt0n/github-nvim-theme",
-  --   lazy = false,
-  --   priority = 1000,
+  --   "EdenEast/nightfox.nvim",
   --   config = function()
-  --     require("github-theme").setup({
+  --     require("nightfox").setup({
   --       options = {
-  --         transparent = true,
+  --         -- transparent = true,
+  --         terminal_colors = true,
   --       },
   --     })
-  --
-  --     -- if vim.o.background == "light" then
-  --     --   vim.cmd('colorscheme github_light_default')
-  --     -- else
-  --     --   vim.cmd('colorscheme github_dark')
-  --     -- end
-  --
-  --     vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-  --     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-  --     vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none" })
-  --     vim.api.nvim_set_hl(0, "Pmenu", { bg = "none" })
+  --     vim.cmd("colorscheme nightfox")
   --   end,
   -- },
-
   -- {
   --   "akinsho/bufferline.nvim",
   --   version = "*",
