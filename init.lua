@@ -596,7 +596,6 @@ local plugins = {
 
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "master",
     lazy = false,
     build = ":TSUpdate",
     event = "BufWinEnter",
@@ -607,7 +606,7 @@ local plugins = {
       vim.opt.foldmethod = "expr"
       vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
-      require("nvim-treesitter.configs").setup({
+      require("nvim-treesitter").setup({
         highlight = {
           enable = true,
           -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
