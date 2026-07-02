@@ -352,7 +352,7 @@ local plugins = {
             css = { "prettierd" },
             graphql = { "prettierd" },
             json = { "prettierd" },
-            yaml = { "prettierd" },
+            yaml = { "yamlfmt" },
             scss = { "prettierd" },
             html = { "prettierd" },
             python = { "ruff_format" },
@@ -362,10 +362,21 @@ local plugins = {
             terraform = { "terraform_fmt" },
             go = { "goimports", "gofumpt", "golangci-lint" },
           },
+          -- format_on_save = function(bufnr)
+          --   if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+          --     return
+          --   end
+
+          -- if vim.bo[bufnr].filetype == "yaml" then
+          --   return
+          -- end
+
+          --   return { timeout_ms = 500, lsp_fallback = true }
+          -- end,
           format_on_save = {
             -- These options will be passed to conform.format()
             -- async = false,
-            -- lsp_fallback = false,
+            lsp_fallback = true,
             -- timeout_ms = 500,
             -- lsp_format = "fallback",
           },
