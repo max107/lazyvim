@@ -585,8 +585,8 @@ local plugins = {
           -- neovim go
           -- vim.keymap.set("n", "<leader>tt", "<cmd>GoTestFunc<cr>", opts)
 
-          vim.keymap.set("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<cr>", opts)
-          vim.keymap.set("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<cr>", opts)
+          vim.keymap.set("n", "[d", "<cmd>lua vim.diagnostic.jump({ count = -1 })<cr>", opts)
+          vim.keymap.set("n", "]d", "<cmd>lua vim.diagnostic.jump({ count = 1 })<cr>", opts)
         end,
       })
     end,
