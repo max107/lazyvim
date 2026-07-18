@@ -357,10 +357,20 @@ local plugins = {
             html = { "prettierd" },
             python = { "ruff_format" },
             -- nix = { "nixfmt" },
-            hcl = { "hcl" },
             toml = { "taplo" },
-            terraform = { "terraform_fmt" },
             go = { "goimports", "gofumpt", "golangci-lint" },
+
+            terraform = { "tofu_fmt" },
+            tf = { "tofu_fmt" },
+            tofu = { "tofu_fmt" },
+            hcl = { "tofu_fmt" },
+          },
+          formatters = {
+            tofu_fmt = {
+              command = "tofu",
+              args = { "fmt", "-" },
+              stdin = true,
+            },
           },
           -- format_on_save = function(bufnr)
           --   if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
@@ -376,8 +386,8 @@ local plugins = {
           format_on_save = {
             -- These options will be passed to conform.format()
             -- async = false,
-            lsp_fallback = true,
-            -- timeout_ms = 500,
+            lsp_fallback = false,
+            timeout_ms = 500,
             -- lsp_format = "fallback",
           },
         },
@@ -507,7 +517,9 @@ local plugins = {
         filetypes = { "graphql", "graphqls", "typescriptreact", "javascriptreact" },
       })
 
-      vim.lsp.config("terraformls", {
+      vim.lsp.config("tofu_ls", {
+        cmd = { "tofu-ls", "serve" },
+        filetypes = { "terraform", "terraform-vars" },
         root_markers = {
           ".terraform",
           ".git",
@@ -1001,7 +1013,20 @@ local plugins = {
     },
   },
   { "google/vim-jsonnet" },
-  { "Joorem/vim-haproxy" },
+  {
+    "Joorem/vim-haproxy",
+    config = function()
+      local haproxy_group = vim.api.nvim_create_augroup("HaproxyGroup", { clear = true })
+
+      vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+        pattern = "*.cfg",
+        callback = function()
+          vim.bo.filetype = "haproxy"
+        end,
+        group = haproxy_group,
+      })
+    end,
+  },
   -- {
   --   "akinsho/bufferline.nvim",
   --   version = "*",
@@ -1244,6 +1269,10 @@ local plugins = {
       vim.api.nvim_set_keymap("n", "<C-n>", "<cmd>Neotree filesystem reveal toggle current<CR>", opts)
       vim.api.nvim_set_keymap("n", "<C-g>", "<cmd>Neotree git_status toggle current<CR>", opts)
     end,
+  },
+  {
+    "varnishcache-friends/vim-varnish",
+    ft = "vcl", -- Only load for .vcl files
   },
 }
 

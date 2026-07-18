@@ -221,7 +221,6 @@ local plugins = {
       },
     },
   },
-  { "Joorem/vim-haproxy" },
   {
     "sainnhe/sonokai",
     lazy = false,
