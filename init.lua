@@ -205,7 +205,7 @@ local plugins = {
   {
     "saghen/blink.cmp",
     dependencies = { "rafamadriz/friendly-snippets" },
-    version = "1.*",
+    version = "^1.0.0",
     opts = {
       keymap = {
         ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
@@ -271,7 +271,7 @@ local plugins = {
   -- golang development
   {
     "ray-x/go.nvim",
-    version = "v0.11",
+    version = "^0.11.0",
     dependencies = { -- optional packages
       "ray-x/guihua.lua",
       "neovim/nvim-lspconfig",
@@ -301,10 +301,14 @@ local plugins = {
   { "nfnty/vim-nftables" },
 
   -- d2 diagrams syntax highlight
-  { "terrastruct/d2-vim", ft = { "d2" } },
+  {
+    "terrastruct/d2-vim",
+    ft = { "d2" },
+  },
 
   {
     "windwp/nvim-autopairs",
+    version = "^0.11.0",
     event = "InsertEnter",
     config = function()
       require("nvim-autopairs").setup({
@@ -323,6 +327,7 @@ local plugins = {
   },
   {
     "grafana/vim-alloy",
+    ft = "alloy",
     config = function()
       vim.filetype.add({
         extension = {
@@ -331,17 +336,21 @@ local plugins = {
       })
     end,
   },
+
   {
     "neovim/nvim-lspconfig",
+    version = "^2.0.0",
     dependencies = {
       {
         -- small lsp progress plugin
         "j-hui/fidget.nvim",
+        version = "^2.0.0",
         opts = {},
       },
       {
         -- code formatting tool
         "stevearc/conform.nvim",
+        version = "^9.0.0",
         opts = {
           formatters_by_ft = {
             lua = { "stylua" },
@@ -360,18 +369,18 @@ local plugins = {
             toml = { "taplo" },
             go = { "goimports", "gofumpt", "golangci-lint" },
 
-            terraform = { "tofu_fmt" },
-            tf = { "tofu_fmt" },
-            tofu = { "tofu_fmt" },
-            hcl = { "tofu_fmt" },
+            -- terraform = { "tofu_fmt" },
+            -- tf = { "tofu_fmt" },
+            -- tofu = { "tofu_fmt" },
+            -- hcl = { "tofu_fmt" },
           },
-          formatters = {
-            tofu_fmt = {
-              command = "tofu",
-              args = { "fmt", "-" },
-              stdin = true,
-            },
-          },
+          -- formatters = {
+          --   tofu_fmt = {
+          --     command = "tofu",
+          --     args = { "fmt", "-" },
+          --     stdin = true,
+          --   },
+          -- },
           -- format_on_save = function(bufnr)
           --   if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
           --     return
@@ -388,6 +397,7 @@ local plugins = {
             -- async = false,
             lsp_fallback = false,
             timeout_ms = 500,
+            quiet = true,
             -- lsp_format = "fallback",
           },
         },
@@ -518,8 +528,7 @@ local plugins = {
       })
 
       vim.lsp.config("tofu_ls", {
-        cmd = { "tofu-ls", "serve" },
-        filetypes = { "terraform", "terraform-vars" },
+        filetypes = { "opentofu", "opentofu-vars", "terraform", "terraform-vars" },
         root_markers = {
           ".terraform",
           ".git",
@@ -606,7 +615,8 @@ local plugins = {
 
   {
     "echasnovski/mini.comment",
-    version = "*",
+    event = "BufWinEnter",
+    version = "^0.18.0",
     opts = {
       mappings = {
         comment = "",
@@ -618,8 +628,21 @@ local plugins = {
   },
 
   {
+    "Joorem/vim-haproxy",
+    ft = { "haproxy" },
+    config = function()
+      vim.filetype.add({
+        pattern = {
+          [".*haproxy%.cfg.*"] = "haproxy",
+          [".*haproxy.*%.conf"] = "haproxy",
+        },
+      })
+    end,
+  },
+
+  {
     "nvim-treesitter/nvim-treesitter",
-    branch = "main",
+    version = "^0.10.0",
     lazy = false,
     build = ":TSUpdate",
     event = "BufWinEnter",
@@ -714,6 +737,7 @@ local plugins = {
           "typescript",
           "vue",
           "yaml",
+          "haproxy",
         },
       })
     end,
@@ -737,23 +761,13 @@ local plugins = {
 
   {
     "folke/trouble.nvim",
-    opts = {},
-    cmd = "Trouble",
-    keys = {
-      {
-        "<leader>qq",
-        -- "<cmd>Trouble diagnostics toggle focus=false<cr>",
-        "<cmd>Trouble diagnostics toggle focus=false win.position=right<cr>",
-        desc = "Quickfix List (Trouble)",
-      },
-    },
-  },
-
-  {
-    "folke/trouble.nvim",
+    version = "^3.0.0",
     dependencies = {
       "nvim-tree/nvim-web-devicons",
-      "folke/todo-comments.nvim",
+      {
+        "folke/todo-comments.nvim",
+        version = "^1.0.0",
+      },
     },
     opts = {
       focus = true,
@@ -777,11 +791,18 @@ local plugins = {
     cmd = "Trouble",
     keys = {
       { "<leader>tt", "<cmd>Trouble mydiags toggle<CR>", desc = "Open trouble workspace diagnostics" },
+      {
+        "<leader>qq",
+        -- "<cmd>Trouble diagnostics toggle focus=false<cr>",
+        "<cmd>Trouble diagnostics toggle focus=false win.position=right<cr>",
+        desc = "Quickfix List (Trouble)",
+      },
     },
   },
 
   {
     "folke/snacks.nvim",
+    version = "^2.0.0",
     priority = 1000,
     lazy = false,
     ---@type snacks.Config
@@ -1013,20 +1034,9 @@ local plugins = {
       },
     },
   },
-  { "google/vim-jsonnet" },
   {
-    "Joorem/vim-haproxy",
-    config = function()
-      local haproxy_group = vim.api.nvim_create_augroup("HaproxyGroup", { clear = true })
-
-      vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-        pattern = "*.cfg",
-        callback = function()
-          vim.bo.filetype = "haproxy"
-        end,
-        group = haproxy_group,
-      })
-    end,
+    "google/vim-jsonnet",
+    ft = "jsonnet",
   },
   -- {
   --   "akinsho/bufferline.nvim",
@@ -1133,8 +1143,12 @@ local plugins = {
     end,
   },
   {
+    "nvim-tree/nvim-web-devicons",
+    branch = "master",
+  },
+  {
     "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
+    version = "^3.0.0",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
@@ -1270,10 +1284,6 @@ local plugins = {
       vim.api.nvim_set_keymap("n", "<C-n>", "<cmd>Neotree filesystem reveal toggle current<CR>", opts)
       vim.api.nvim_set_keymap("n", "<C-g>", "<cmd>Neotree git_status toggle current<CR>", opts)
     end,
-  },
-  {
-    "varnishcache-friends/vim-varnish",
-    ft = "vcl", -- Only load for .vcl files
   },
 }
 
