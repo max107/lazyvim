@@ -395,7 +395,7 @@ local plugins = {
           format_on_save = {
             -- These options will be passed to conform.format()
             -- async = false,
-            lsp_fallback = false,
+            lsp_fallback = true,
             timeout_ms = 500,
             quiet = true,
             -- lsp_format = "fallback",
@@ -528,6 +528,7 @@ local plugins = {
       })
 
       vim.lsp.config("tofu_ls", {
+        cmd = { "tofu-ls", "serve" },
         filetypes = { "opentofu", "opentofu-vars", "terraform", "terraform-vars" },
         root_markers = {
           ".terraform",
@@ -586,6 +587,7 @@ local plugins = {
         -- terraform
         "terraformls",
         "tflint",
+        "tofu_ls",
 
         -- vscode language servers
         "cssls",
