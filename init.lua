@@ -5,7 +5,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
+      { out,                            "WarningMsg" },
       { "\nPress any key to exit..." },
     }, true, {})
     vim.fn.getchar()
@@ -34,7 +34,7 @@ vim.opt.fileformats = "unix,mac,dos"
 vim.opt.virtualedit = "block"
 vim.opt.wildignorecase = true
 vim.opt.wildignore =
-  ".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/vendor/**"
+".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/vendor/**"
 vim.opt.history = 2000
 vim.opt.shada = "!,'300,<50,@100,s10,h"
 vim.opt.smarttab = true
@@ -275,7 +275,7 @@ local plugins = {
     dependencies = { -- optional packages
       "ray-x/guihua.lua",
       "neovim/nvim-lspconfig",
-      "nvim-treesitter/nvim-treesitter",
+      -- "nvim-treesitter/nvim-treesitter",
     },
     opts = {
       -- lsp_keymaps = false,
@@ -340,6 +340,7 @@ local plugins = {
   {
     "neovim/nvim-lspconfig",
     version = "^2.0.0",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       {
         -- small lsp progress plugin
@@ -347,70 +348,86 @@ local plugins = {
         version = "^2.0.0",
         opts = {},
       },
-      {
-        -- code formatting tool
-        "stevearc/conform.nvim",
-        version = "^9.0.0",
-        opts = {
-          formatters_by_ft = {
-            lua = { "stylua" },
-            sql = { "sql_formatter" },
-            vue = { "prettierd" },
-            typescript = { "prettierd" },
-            -- javascript = { "prettierd" },
-            css = { "prettierd" },
-            graphql = { "prettierd" },
-            json = { "prettierd" },
-            yaml = { "yamlfmt" },
-            scss = { "prettierd" },
-            html = { "prettierd" },
-            python = { "ruff_format" },
-            -- nix = { "nixfmt" },
-            toml = { "taplo" },
-            go = { "goimports", "gofumpt", "golangci-lint" },
-
-            -- terraform = { "tofu_fmt" },
-            -- tf = { "tofu_fmt" },
-            -- tofu = { "tofu_fmt" },
-            -- hcl = { "tofu_fmt" },
-          },
-          -- formatters = {
-          --   tofu_fmt = {
-          --     command = "tofu",
-          --     args = { "fmt", "-" },
-          --     stdin = true,
-          --   },
-          -- },
-          -- format_on_save = function(bufnr)
-          --   if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-          --     return
-          --   end
-
-          -- if vim.bo[bufnr].filetype == "yaml" then
-          --   return
-          -- end
-
-          --   return { timeout_ms = 500, lsp_fallback = true }
-          -- end,
-          format_on_save = {
-            -- These options will be passed to conform.format()
-            -- async = false,
-            lsp_fallback = true,
-            timeout_ms = 500,
-            quiet = true,
-            -- lsp_format = "fallback",
-          },
-        },
-        config = function(_, opts)
-          require("conform").setup(opts)
-
-          vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-        end,
-      },
+      -- {
+      --   -- code formatting tool
+      --   "stevearc/conform.nvim",
+      --   version = "^9.0.0",
+      --   opts = {
+      --     formatters_by_ft = {
+      --       lua = { "stylua" },
+      --       sql = { "sql_formatter" },
+      --       vue = { "prettierd" },
+      --       typescript = { "prettierd" },
+      --       -- javascript = { "prettierd" },
+      --       css = { "prettierd" },
+      --       graphql = { "prettierd" },
+      --       json = { "prettierd" },
+      --       yaml = { "yamlfmt" },
+      --       scss = { "prettierd" },
+      --       html = { "prettierd" },
+      --       python = { "ruff_format" },
+      --       -- nix = { "nixfmt" },
+      --       toml = { "taplo" },
+      --       go = { "goimports", "gofumpt", "golangci-lint" },
+      --
+      --       -- terraform = { "tofu_fmt" },
+      --       -- tf = { "tofu_fmt" },
+      --       -- tofu = { "tofu_fmt" },
+      --       -- hcl = { "tofu_fmt" },
+      --     },
+      --     -- formatters = {
+      --     --   tofu_fmt = {
+      --     --     command = "tofu",
+      --     --     args = { "fmt", "-" },
+      --     --     stdin = true,
+      --     --   },
+      --     -- },
+      --     -- format_on_save = function(bufnr)
+      --     --   if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+      --     --     return
+      --     --   end
+      --
+      --     -- if vim.bo[bufnr].filetype == "yaml" then
+      --     --   return
+      --     -- end
+      --
+      --     --   return { timeout_ms = 500, lsp_fallback = true }
+      --     -- end,
+      --     format_on_save = {
+      --       -- These options will be passed to conform.format()
+      --       -- async = false,
+      --       lsp_fallback = true,
+      --       timeout_ms = 500,
+      --       quiet = true,
+      --       -- lsp_format = "fallback",
+      --     },
+      --   },
+      --   config = function(_, opts)
+      --     require("conform").setup(opts)
+      --
+      --     vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+      --   end,
+      -- },
     },
     config = function()
       vim.lsp.config("*", {
+        on_attach = function(client, bufnr)
+          if client:supports_method('textDocument/formatting') then
+            vim.api.nvim_create_autocmd('BufWritePre', {
+              buffer = bufnr,
+              callback = function()
+                vim.lsp.buf.format({ bufnr = bufnr })
+              end,
+            })
+          end
+        end,
         capabilities = require("blink.cmp").get_lsp_capabilities({
+          workspace = {
+            -- Enable file watching capability for new/deleted files
+            didChangeWatchedFiles = {
+              dynamicRegistration = true
+            }
+          },
           textDocument = {
             completion = {
               completionItem = {
@@ -544,7 +561,8 @@ local plugins = {
           yaml = {
             schemas = {
               ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
-              ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = "/.gitlab-ci.yml",
+              ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] =
+              "/.gitlab-ci.yml",
             },
           },
         },
@@ -698,7 +716,7 @@ local plugins = {
             -- mapping query_strings to modes.
             selection_modes = {
               ["@parameter.outer"] = "v", -- charwise
-              ["@function.outer"] = "V", -- linewise
+              ["@function.outer"] = "V",  -- linewise
               ["@class.outer"] = "<c-v>", -- blockwise
             },
             -- If you set this to `true` (default is `false`) then any textobject is
@@ -778,7 +796,7 @@ local plugins = {
           mode = "diagnostics", -- inherit from diagnostics mode
           filter = {
             any = {
-              buf = 0, -- current buffer
+              buf = 0,                                    -- current buffer
               {
                 severity = vim.diagnostic.severity.ERROR, -- errors only
                 function(item)
@@ -830,16 +848,16 @@ local plugins = {
         -- },
         ---@class snacks.picker.matcher.Config
         matcher = {
-          fuzzy = true, -- use fuzzy matching
-          smartcase = true, -- use smartcase
-          ignorecase = true, -- use ignorecase
-          sort_empty = false, -- sort results when the search string is empty
+          fuzzy = true,          -- use fuzzy matching
+          smartcase = true,      -- use smartcase
+          ignorecase = true,     -- use ignorecase
+          sort_empty = false,    -- sort results when the search string is empty
           filename_bonus = true, -- give bonus for matching file names (last part of the path)
-          file_pos = true, -- support patterns like `file:line:col` and `file:line`
+          file_pos = true,       -- support patterns like `file:line:col` and `file:line`
           -- the bonusses below, possibly require string concatenation and path normalization,
           -- so this can have a performance impact for large lists and increase memory usage
-          cwd_bonus = true, -- give bonus for matching files in the cwd
-          frecency = true, -- frecency bonus
+          cwd_bonus = true,     -- give bonus for matching files in the cwd
+          frecency = true,      -- frecency bonus
           history_bonus = true, -- give more weight to chronological order
         },
       },
@@ -853,8 +871,8 @@ local plugins = {
         left = { "mark", "sign" }, -- priority of signs on the left (high to low)
         right = { "fold", "git" }, -- priority of signs on the right (high to low)
         folds = {
-          open = true, -- show open fold icons
-          git_hl = false, -- use Git Signs hl for fold icons
+          open = true,             -- show open fold icons
+          git_hl = false,          -- use Git Signs hl for fold icons
         },
         git = {
           -- patterns to match Git signs
