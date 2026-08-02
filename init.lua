@@ -662,7 +662,8 @@ local plugins = {
 
   {
     "nvim-treesitter/nvim-treesitter",
-    version = "^0.10.0",
+    -- version = "^0.10.0",
+    branch = "main",
     lazy = false,
     build = ":TSUpdate",
     event = "BufWinEnter",
