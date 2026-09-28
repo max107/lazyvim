@@ -502,19 +502,6 @@ local plugins = {
   },
 
   {
-    "Joorem/vim-haproxy",
-    ft = { "haproxy" },
-    config = function()
-      vim.filetype.add({
-        pattern = {
-          [".*haproxy%.cfg.*"] = "haproxy",
-          [".*haproxy.*%.conf"] = "haproxy",
-        },
-      })
-    end,
-  },
-
-  {
     "nvim-treesitter/nvim-treesitter",
     -- main branch: setup() no longer takes highlight/ensure_installed/textobjects;
     -- parsers are installed via install() and highlighting is started per buffer.
@@ -530,6 +517,24 @@ local plugins = {
       vim.opt.foldmethod = "expr"
       vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
+      -- Parsers missing from nvim-treesitter. Must be registered before install():
+      -- install()/update() fire TSUpdate and read the parser list after it.
+      -- Queries for them live in queries/<lang>/ of this config.
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TSUpdate",
+        callback = function()
+          require("nvim-treesitter.parsers").haproxy = {
+            install_info = {
+              url = "https://github.com/thochra/tree-sitter-haproxy",
+              revision = "59e19f2b55be588dadbf8b038b294e5ed935cbb2",
+            },
+          }
+        end,
+      })
+
+      -- OpenTofu files are parsed as Terraform
+      vim.treesitter.language.register("terraform", { "opentofu", "opentofu-vars" })
+
       -- async; already installed parsers are skipped
       require("nvim-treesitter").install({
         "astro",
@@ -539,6 +544,7 @@ local plugins = {
         "fish",
         "go",
         "graphql",
+        "haproxy",
         "hcl",
         "html",
         "javascript",

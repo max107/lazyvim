@@ -214,3 +214,12 @@ vim.cmd([[autocmd BufNewFile,BufRead *.nomad setfiletype hcl]])
 -- Built-in detection maps an empty *.tf to "tf" (TinyFugue) and only switches to
 -- "terraform" once the buffer has content, so new files got no highlighting/LSP.
 vim.filetype.add({ extension = { tf = "terraform" } })
+-- *.tofu has no built-in detection; "opentofu" is what tofu_ls attaches to.
+vim.filetype.add({ extension = { tofu = "opentofu" } })
+
+vim.filetype.add({
+  pattern = {
+    [".*haproxy%.cfg.*"] = "haproxy",
+    [".*haproxy.*%.conf"] = "haproxy",
+  },
+})
