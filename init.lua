@@ -99,15 +99,6 @@ local plugins = {
     build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
   },
 
-  -- nftables syntax highlight
-  { "nfnty/vim-nftables" },
-
-  -- d2 diagrams syntax highlight
-  {
-    "terrastruct/d2-vim",
-    ft = { "d2" },
-  },
-
   {
     "windwp/nvim-autopairs",
     version = "^0.11.0",
@@ -212,6 +203,14 @@ local plugins = {
       -- },
     },
     config = function()
+      -- Experiment: LSP semantic tokens are disabled, highlighting comes from treesitter only.
+      -- They repainted treesitter colors ~0.5-1s after a file opens.
+      -- To revert, delete this line (or toggle at runtime:
+      -- :lua vim.lsp.semantic_tokens.enable(not vim.lsp.semantic_tokens.is_enabled())).
+      -- Softer alternative: keep them below treesitter instead of disabling:
+      -- vim.hl.priorities.semantic_tokens = 95
+      vim.lsp.semantic_tokens.enable(false)
+
       -- projects where format on save is disabled
       local no_format_projects = {
         -- website = true,
@@ -519,14 +518,25 @@ local plugins = {
 
       -- Parsers missing from nvim-treesitter. Must be registered before install():
       -- install()/update() fire TSUpdate and read the parser list after it.
-      -- Queries for them live in queries/<lang>/ of this config.
       vim.api.nvim_create_autocmd("User", {
         pattern = "TSUpdate",
         callback = function()
-          require("nvim-treesitter.parsers").haproxy = {
+          local parsers = require("nvim-treesitter.parsers")
+          -- no queries in the repo, they live in queries/haproxy/ of this config
+          parsers.haproxy = {
             install_info = {
               url = "https://github.com/thochra/tree-sitter-haproxy",
               revision = "59e19f2b55be588dadbf8b038b294e5ed935cbb2",
+            },
+          }
+          parsers.nftables = {
+            install_info = {
+              url = "https://github.com/acd407/tree-sitter-nftables",
+              revision = "32afd3418f9380f8c84b2d7f4ab8e68431bde5ee",
+              -- the repo has no src/parser.c and no src/grammar.json: generate from grammar.js
+              generate = true,
+              generate_from_json = false,
+              queries = "queries",
             },
           }
         end,
@@ -549,10 +559,12 @@ local plugins = {
         "html",
         "javascript",
         "json",
+        "jsonnet",
         "lua",
         "make",
         "markdown",
         "markdown_inline",
+        "nftables",
         "nginx",
         "nix",
         "promql",
@@ -891,10 +903,6 @@ local plugins = {
         desc = "Todo",
       },
     },
-  },
-  {
-    "google/vim-jsonnet",
-    ft = "jsonnet",
   },
   -- {
   --   "akinsho/bufferline.nvim",

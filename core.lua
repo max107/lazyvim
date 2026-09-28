@@ -223,3 +223,21 @@ vim.filetype.add({
     [".*haproxy.*%.conf"] = "haproxy",
   },
 })
+
+-- No built-in detection for nftables
+vim.filetype.add({
+  extension = { nft = "nftables" },
+  filename = { ["nftables.conf"] = "nftables" },
+  pattern = {
+    -- #!/usr/sbin/nft -f, #!/usr/bin/env nft -f
+    [".*"] = {
+      function(_, bufnr)
+        local line = vim.filetype.getlines(bufnr, 1)
+        if line:match("^#!%S*/nft%f[%s%z]") or line:match("^#!%S*/env%s+nft%f[%s%z]") then
+          return "nftables"
+        end
+      end,
+      { priority = -math.huge },
+    },
+  },
+})
