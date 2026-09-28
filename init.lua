@@ -1,205 +1,7 @@
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-  if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out,                            "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
-  end
-end
-vim.opt.rtp:prepend(lazypath)
+-- Full local config: shared base plus the complete plugin set.
 
-vim.g.mapleader = " "
-
-vim.opt.backup = false
-vim.opt.writebackup = false
-vim.opt.swapfile = false
-
-vim.keymap.set("n", " ", "<Nop>", { silent = true, remap = false })
-
-vim.opt.cursorline = true
-vim.opt.smartindent = true
-vim.opt.hlsearch = true
-vim.opt.backspace = { "start", "eol", "indent" }
-vim.opt.softtabstop = 4
-vim.opt.termguicolors = true
-vim.opt.mouse = ""
-vim.opt.hidden = true
-vim.opt.fileformats = "unix,mac,dos"
-vim.opt.virtualedit = "block"
-vim.opt.wildignorecase = true
-vim.opt.wildignore =
-".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/vendor/**"
-vim.opt.history = 2000
-vim.opt.shada = "!,'300,<50,@100,s10,h"
-vim.opt.smarttab = true
-vim.opt.shiftround = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.infercase = true
-vim.opt.incsearch = true
-vim.opt.wrapscan = true
-vim.opt.complete = ".,w,b,k"
-vim.opt.inccommand = "nosplit"
-vim.opt.grepformat = "%f:%l:%c:%m"
-vim.opt.grepprg = "rg --hidden --vimgrep --smart-case --"
-vim.opt.breakat = [[\ \	;:,!?]]
-vim.opt.startofline = false
-vim.opt.whichwrap = "h,l,<,>,[,],~"
-vim.opt.splitbelow = true
-vim.opt.splitright = true
-vim.opt.switchbuf = "useopen"
-vim.opt.diffopt = "filler,iwhite,internal,algorithm:patience"
-vim.opt.completeopt = "menu,menuone,noselect"
-vim.opt.jumpoptions = "stack"
-vim.opt.showmode = false
-vim.opt.shortmess = "aoOTIcF"
-vim.opt.scrolloff = 2
-vim.opt.path:append({ "**" }) -- Finding files - Search down into subfolders
-vim.opt.sidescrolloff = 5
-vim.opt.ruler = false
-vim.opt.winwidth = 30
-vim.opt.showtabline = 0
-vim.opt.winminwidth = 10
-vim.opt.pumheight = 15
-vim.opt.helpheight = 12
-vim.opt.previewheight = 12
-vim.opt.showcmd = false
-vim.opt.equalalways = false
-vim.opt.laststatus = 0
-vim.opt.showbreak = "↳  "
-vim.opt.statuscolumn = ""
-vim.opt.signcolumn = "yes"
-vim.opt.undofile = true
-vim.opt.synmaxcol = 2500
-vim.opt.formatoptions = "1jcroql"
-vim.opt.textwidth = 80
-vim.opt.expandtab = true
-vim.opt.autoindent = true
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.breakindentopt = "shift:2,min:20"
-vim.opt.wrap = false
-vim.opt.linebreak = false -- Wrap on word boundary
-vim.opt.colorcolumn = "120"
-vim.opt.winborder = "single"
-vim.opt.foldlevel = 99
-vim.opt.foldnestmax = 4
-
-vim.keymap.del("n", "gcc")
-vim.keymap.del("n", "gc")
-
-vim.diagnostic.config({
-  signs = false,
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
-  virtual_lines = false,
-  virtual_text = false,
-})
-
-vim.opt.clipboard = "unnamedplus"
-
-if vim.loop.os_uname().sysname == "Darwin" then
-  vim.g.clipboard = {
-    name = "macOS-clipboard",
-    copy = {
-      ["+"] = "pbcopy",
-      ["*"] = "pbcopy",
-    },
-    paste = {
-      ["+"] = "pbpaste",
-      ["*"] = "pbpaste",
-    },
-    cache_enabled = 0,
-  }
-  vim.g.python_host_prog = "/usr/bin/python"
-  vim.g.python3_host_prog = "/usr/local/bin/python3"
-end
-
--- Undercurl
-vim.cmd([[let &t_Cs = "\e[4:3m"]])
-vim.cmd([[let &t_Ce = "\e[4:0m"]])
-
--- Highlight on yank
-local yankGrp = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
-vim.api.nvim_create_autocmd("TextYankPost", {
-  command = "silent! lua vim.highlight.on_yank({higroup='IncSearch', timeout=100})",
-  group = yankGrp,
-})
-
--- show cursor line only in active window
-local cursorGrp = vim.api.nvim_create_augroup("CursorLine", { clear = true })
-vim.api.nvim_create_autocmd({ "InsertLeave", "WinEnter" }, {
-  pattern = "*",
-  command = "set cursorline",
-  group = cursorGrp,
-})
-vim.api.nvim_create_autocmd(
-  { "InsertEnter", "WinLeave" },
-  { pattern = "*", command = "set nocursorline", group = cursorGrp }
-)
-
--- Remove whitespace on save
-vim.api.nvim_create_autocmd("BufWritePre", { command = [[:%s/\s\+$//e]] })
-
--- Don't auto commenting new lines
-vim.api.nvim_create_autocmd("BufEnter", { command = [[set fo-=c fo-=r fo-=o]] })
-
--- go to last loc when opening a buffer
-vim.api.nvim_create_autocmd(
-  "BufReadPost",
-  { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
-)
-
--- kill all floating windows
-vim.keymap.set(
-  "n",
-  "<leader>cc",
-  ':lua for _, win in ipairs(vim.api.nvim_list_wins()) do local config = vim.api.nvim_win_get_config(win); if config.relative ~= "" then vim.api.nvim_win_close(win, false); print("Closing window", win) end end<CR>',
-  { remap = false }
-)
-
--- Stay in indent mode
-local n_opts = { silent = true, noremap = true }
--- Normal mode
-vim.keymap.set("n", "<", "<<", n_opts)
-vim.keymap.set("n", ">", ">>", n_opts)
--- Visual --
-vim.keymap.set("v", "<", "<gv", n_opts)
-vim.keymap.set("v", ">", ">gv", n_opts)
--- buffer switch --
-vim.keymap.set("n", "gp", ":bprev<cr>", n_opts)
-vim.keymap.set("n", "gn", ":bnext<cr>", n_opts)
-vim.keymap.set("v", "gp", ":bprev<cr>", n_opts)
-vim.keymap.set("v", "gn", ":bnext<cr>", n_opts)
-
--- use leader with w for save file
-vim.keymap.set("n", "<leader>w", ":w<cr>", n_opts)
-
--- close all popup windows
-vim.keymap.set("n", "<leader>ka", function()
-  for _, win in ipairs(vim.api.nvim_list_wins()) do
-    local config = vim.api.nvim_win_get_config(win)
-    if config.relative ~= "" then
-      vim.api.nvim_win_close(win, false)
-      print("Closing window", win)
-    end
-  end
-end, n_opts)
-
-vim.cmd([[
-command! W execute ":w"
-command! Wq execute ":wq"
-command! WQ execute ":wq"
-]])
-
-vim.cmd([[autocmd BufNewFile,BufRead *.nomad setfiletype hcl]])
+local config_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
+dofile(config_dir .. "/core.lua")
 
 local plugins = {
   {
@@ -410,10 +212,22 @@ local plugins = {
       -- },
     },
     config = function()
+      -- projects where format on save is disabled
+      local no_format_projects = {
+        -- website = true,
+        -- website_business = true,
+      }
+
       vim.lsp.config("*", {
         on_attach = function(client, bufnr)
+          local project = vim.fs.basename(client.root_dir or vim.fn.getcwd())
+          if no_format_projects[project] then
+            return
+          end
           if client:supports_method('textDocument/formatting') then
+            local grp = vim.api.nvim_create_augroup('LspFormat' .. bufnr, { clear = true })
             vim.api.nvim_create_autocmd('BufWritePre', {
+              group = grp,
               buffer = bufnr,
               callback = function()
                 vim.lsp.buf.format({
@@ -561,6 +375,38 @@ local plugins = {
         },
       })
 
+      vim.lsp.config("intelephense", {
+        cmd = { "intelephense", "--stdio" },
+        filetypes = { "php" },
+        root_markers = { ".git", "composer.json" },
+        settings = { intelephense = { files = {} } },
+        -- The client keeps a reference to this settings table, so before_init mutates it instead of reassigning.
+        -- Setting files.exclude replaces intelephense's defaults, so they are repeated here. Project dirs are
+        -- anchored to the root: a bare "**/cache/**" would also hide vendor/psr/cache and vendor/symfony/cache.
+        before_init = function(_, config)
+          local root = config.root_dir
+          if not root then
+            return
+          end
+          local exclude = {
+            "**/.git/**",
+            "**/.svn/**",
+            "**/.hg/**",
+            "**/CVS/**",
+            "**/.DS_Store/**",
+            "**/node_modules/**",
+            "**/bower_components/**",
+            "**/vendor/**/{Tests,tests}/**",
+            "**/.history/**",
+            "**/vendor/**/vendor/**",
+          }
+          for _, dir in ipairs({ "private", "cache", "temp", "logs", "var/doctrine/proxies" }) do
+            table.insert(exclude, root .. "/" .. dir .. "/**")
+          end
+          config.settings.intelephense.files.exclude = exclude
+        end,
+      })
+
       vim.lsp.config("yamlls", {
         settings = {
           yaml = {
@@ -617,6 +463,9 @@ local plugins = {
         "jsonls",
         "html",
         -- 'eslint',
+
+        -- php
+        "intelephense"
       })
 
       vim.api.nvim_create_autocmd("LspAttach", {
@@ -667,105 +516,89 @@ local plugins = {
 
   {
     "nvim-treesitter/nvim-treesitter",
-    -- version = "^0.10.0",
+    -- main branch: setup() no longer takes highlight/ensure_installed/textobjects;
+    -- parsers are installed via install() and highlighting is started per buffer.
+    -- Requires tree-sitter-cli (brew install tree-sitter-cli).
     branch = "main",
+    commit = "074aa4422bf029908338e855d0c0f71470a971bb",
     lazy = false,
     build = ":TSUpdate",
-    event = "BufWinEnter",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects",
+      { "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
     },
     config = function()
       vim.opt.foldmethod = "expr"
       vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
-      require("nvim-treesitter").setup({
-        highlight = {
-          enable = true,
-          -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
-          disable = function(_, buf)
-            local max_filesize = 1 * 1024 * 1024 -- 1 MB
-            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-            if ok and stats and stats.size > max_filesize then
-              return true
-            end
-          end,
+      -- async; already installed parsers are skipped
+      require("nvim-treesitter").install({
+        "astro",
+        "bash",
+        "css",
+        -- "dockerfile",
+        "fish",
+        "go",
+        "graphql",
+        "hcl",
+        "html",
+        "javascript",
+        "json",
+        "lua",
+        "make",
+        "markdown",
+        "markdown_inline",
+        "nginx",
+        "nix",
+        "promql",
+        "proto",
+        "scss",
+        "sql",
+        "terraform",
+        "toml",
+        "tsx",
+        "typescript",
+        "vue",
+        "yaml",
+      })
 
-          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-          -- Using this option may slow down your editor, and you may see some duplicate highlights.
-          -- Instead of true it can also be a list of languages
-          additional_vim_regex_highlighting = false,
-        },
-        textobjects = {
-          select = {
-            enable = true,
-            -- Automatically jump forward to textobj, similar to targets.vim
-            lookahead = true,
-            keymaps = {
-              -- You can use the capture groups defined in textobjects.scm
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              -- You can optionally set descriptions to the mappings (used in the desc parameter of
-              -- nvim_buf_set_keymap) which plugins like which-key display
-              ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-              -- You can also use captures from other query groups like `locals.scm`
-              ["as"] = { query = "@local.scope", query_group = "locals", desc = "Select language scope" },
-            },
-            -- You can choose the select mode (default is charwise 'v')
-            --
-            -- Can also be a function which gets passed a table with the keys
-            -- * query_string: eg '@function.inner'
-            -- * method: eg 'v' or 'o'
-            -- and should return the mode ('v', 'V', or '<c-v>') or a table
-            -- mapping query_strings to modes.
-            selection_modes = {
-              ["@parameter.outer"] = "v", -- charwise
-              ["@function.outer"] = "V",  -- linewise
-              ["@class.outer"] = "<c-v>", -- blockwise
-            },
-            -- If you set this to `true` (default is `false`) then any textobject is
-            -- extended to include preceding or succeeding whitespace. Succeeding
-            -- whitespace has priority in order to act similarly to eg the built-in
-            -- `ap`.
-            --
-            -- Can also be a function which gets passed a table with the keys
-            -- * query_string: eg '@function.inner'
-            -- * selection_mode: eg 'v'
-            -- and should return true or false
-            include_surrounding_whitespace = true,
+      local max_filesize = 1 * 1024 * 1024 -- 1 MB, skip slow highlighting on large files
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
+        callback = function(args)
+          local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(args.buf))
+          if ok and stats and stats.size > max_filesize then
+            return
+          end
+          -- no-op (returns false) when there is no parser for this filetype
+          pcall(vim.treesitter.start, args.buf)
+        end,
+      })
+
+      require("nvim-treesitter-textobjects").setup({
+        select = {
+          -- Automatically jump forward to textobj, similar to targets.vim
+          lookahead = true,
+          selection_modes = {
+            ["@parameter.outer"] = "v", -- charwise
+            ["@function.outer"] = "V",  -- linewise
+            ["@class.outer"] = "<c-v>", -- blockwise
           },
-        },
-        ensure_installed = {
-          "astro",
-          "bash",
-          "css",
-          -- "dockerfile",
-          "fish",
-          "go",
-          "graphql",
-          "hcl",
-          "html",
-          "javascript",
-          "json",
-          "lua",
-          "make",
-          "markdown",
-          "nginx",
-          "nix",
-          "promql",
-          "proto",
-          "scss",
-          "sql",
-          "terraform",
-          "toml",
-          "typescript",
-          "vue",
-          "yaml",
-          "haproxy",
+          include_surrounding_whitespace = true,
         },
       })
+
+      local select = require("nvim-treesitter-textobjects.select")
+      for keys, spec in pairs({
+        ["af"] = { "@function.outer" },
+        ["if"] = { "@function.inner" },
+        ["ac"] = { "@class.outer" },
+        ["ic"] = { "@class.inner", desc = "Select inner part of a class region" },
+        ["as"] = { "@local.scope", "locals", desc = "Select language scope" },
+      }) do
+        vim.keymap.set({ "x", "o" }, keys, function()
+          select.select_textobject(spec[1], spec[2] or "textobjects")
+        end, { desc = spec.desc })
+      end
     end,
   },
 
@@ -806,7 +639,7 @@ local plugins = {
               {
                 severity = vim.diagnostic.severity.ERROR, -- errors only
                 function(item)
-                  return item.filename:find((vim.loop or vim.uv).cwd(), 1, true)
+                  return item.filename:find((vim.uv or vim.loop).cwd(), 1, true)
                 end,
               },
             },
@@ -836,8 +669,6 @@ local plugins = {
       zen = {
         enabled = true,
         dim = true,
-        git_signs = true,
-        mini_diff_signs = false,
       },
       bigfile = { enabled = true },
       dashboard = { enabled = false },
@@ -875,16 +706,11 @@ local plugins = {
       statuscolumn = {
         enabled = true,
         left = { "mark", "sign" }, -- priority of signs on the left (high to low)
-        right = { "fold", "git" }, -- priority of signs on the right (high to low)
+        right = { "fold" },        -- priority of signs on the right (high to low)
         folds = {
           open = true,             -- show open fold icons
-          git_hl = false,          -- use Git Signs hl for fold icons
         },
-        git = {
-          -- patterns to match Git signs
-          patterns = { "GitSign", "MiniDiffSign" },
-        },
-        refresh = 50, -- refresh at most every 50ms
+        refresh = 50,              -- refresh at most every 50ms
       },
       words = { enabled = false },
     },
@@ -1110,6 +936,10 @@ local plugins = {
       ]])
     end,
   },
+  -- colorscheme "terminal" (colors/terminal.lua, generated by
+  -- ~/.dotfiles/bin/theme-sync) is built on mini.base16; loaded on demand so
+  -- it stays selectable from the colorscheme picker
+  -- { "echasnovski/mini.base16", lazy = true },
   -- {
   --   "f-person/auto-dark-mode.nvim",
   --   lazy = false,
@@ -1166,6 +996,11 @@ local plugins = {
       vim.keymap.set("n", "<C-l>", nvim_tmux_nav.NvimTmuxNavigateRight)
       vim.keymap.set("n", "<C-\\>", nvim_tmux_nav.NvimTmuxNavigateLastActive)
       vim.keymap.set("n", "<C-Space>", nvim_tmux_nav.NvimTmuxNavigateNext)
+      -- C-w + arrow: like the built-in window keys, but continues into tmux panes
+      vim.keymap.set("n", "<C-w><Left>", nvim_tmux_nav.NvimTmuxNavigateLeft)
+      vim.keymap.set("n", "<C-w><Down>", nvim_tmux_nav.NvimTmuxNavigateDown)
+      vim.keymap.set("n", "<C-w><Up>", nvim_tmux_nav.NvimTmuxNavigateUp)
+      vim.keymap.set("n", "<C-w><Right>", nvim_tmux_nav.NvimTmuxNavigateRight)
     end,
   },
   {
@@ -1310,6 +1145,65 @@ local plugins = {
       vim.api.nvim_set_keymap("n", "<C-n>", "<cmd>Neotree filesystem reveal toggle current<CR>", opts)
       vim.api.nvim_set_keymap("n", "<C-g>", "<cmd>Neotree git_status toggle current<CR>", opts)
     end,
+  },
+  {
+    "coder/claudecode.nvim",
+    dependencies = { "folke/snacks.nvim" },
+    -- Work profile (same as the fish `claude-work` wrapper) only inside the work repos, personal profile elsewhere.
+    -- Decided once at startup: the plugin reads CLAUDE_CONFIG_DIR at load time to place the IDE lockfile.
+    init = function()
+      local work_dirs = {
+        vim.fn.expand("~/projects/ecarstrade/website"),
+        vim.fn.expand("~/projects/ecarstrade/website_business"),
+      }
+      local cwd = vim.fn.resolve(vim.fn.getcwd())
+      local is_work_dir = false
+      for _, dir in ipairs(work_dirs) do
+        if cwd == dir or vim.startswith(cwd, dir .. "/") then
+          is_work_dir = true
+          break
+        end
+      end
+      vim.env.CLAUDE_CONFIG_DIR = is_work_dir and vim.fn.expand("~/.claude-work") or nil
+    end,
+    opts = {
+      terminal = {
+        snacks_win_opts = {
+          position = "float",
+          width = 0.85,
+          height = 0.85,
+          border = "rounded",
+          keys = {
+            claude_hide = {
+              "<C-q>",
+              function(self)
+                self:hide()
+              end,
+              mode = "t",
+              desc = "Hide Claude",
+            },
+          },
+        },
+      },
+    },
+    keys = {
+      { "<leader>i",  nil,                              desc = "Claude Code" },
+      { "<leader>ii", "<cmd>ClaudeCode<cr>",            desc = "Toggle Claude" },
+      { "<leader>if", "<cmd>ClaudeCodeFocus<cr>",       desc = "Focus Claude" },
+      { "<leader>ir", "<cmd>ClaudeCode --resume<cr>",   desc = "Resume Claude" },
+      { "<leader>iC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
+      { "<leader>im", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
+      { "<leader>ib", "<cmd>ClaudeCodeAdd %<cr>",       desc = "Add current buffer" },
+      { "<leader>is", "<cmd>ClaudeCodeSend<cr>",        mode = "v",                  desc = "Send to Claude" },
+      {
+        "<leader>is",
+        "<cmd>ClaudeCodeTreeAdd<cr>",
+        desc = "Add file",
+        ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
+      },
+      { "<leader>ia", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+      { "<leader>id", "<cmd>ClaudeCodeDiffDeny<cr>",   desc = "Deny diff" },
+    },
   },
 }
 
