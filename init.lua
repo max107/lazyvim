@@ -930,6 +930,13 @@ local plugins = {
     lazy = false,
     priority = 1000,
     config = function()
+      -- приглушённые направляющие отступов snacks.indent (обычные и текущий scope)
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = function()
+          vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#2c2c30" })
+          vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = "#4d4766" })
+        end,
+      })
       vim.cmd([[
         let g:sonokai_transparent_background = 1
         colorscheme sonokai
