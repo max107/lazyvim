@@ -3,82 +3,36 @@
 local config_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
 dofile(config_dir .. "/core.lua")
 
--- приглушённые направляющие отступов snacks.indent (обычные и текущий scope), для светлой и тёмной темы
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = function()
-    local light = vim.o.background == "light"
-    vim.api.nvim_set_hl(0, "SnacksIndent", { fg = light and "#e4dcd4" or "#2c2c30" })
-    vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = light and "#d3c7bb" or "#4d4766" })
-  end,
-})
+-- Native completion (vim.lsp.completion, enabled per buffer on LspAttach below). <C-y> accepts the selected
+-- item and applies its LSP side effects (snippet expansion, auto-imports).
+-- <Tab>/<S-Tab> move down/up the menu, <CR> accepts the selected item (the first one if none is selected).
+-- Without the menu: jump between snippet placeholders, or fall back to the key itself
+-- (<CR> goes through nvim-autopairs, whose own <CR> mapping is off).
+vim.keymap.set("i", "<CR>", function()
+  if vim.fn.pumvisible() == 1 then
+    return vim.keycode(vim.fn.complete_info({ "selected" }).selected == -1 and "<C-n><C-y>" or "<C-y>")
+  elseif vim.snippet.active({ direction = 1 }) then
+    return vim.keycode("<Cmd>lua vim.snippet.jump(1)<CR>")
+  end
+  return require("nvim-autopairs").autopairs_cr()
+end, { expr = true, replace_keycodes = false, desc = "Accept completion / snippet jump / autopairs CR" })
+-- insert mode only: select mode keeps the default snippet jumps
+local function select_or_jump(key, direction)
+  vim.keymap.set("i", key, function()
+    if vim.fn.pumvisible() == 1 then
+      return direction == 1 and "<C-n>" or "<C-p>"
+    elseif vim.snippet.active({ direction = direction }) then
+      return ("<Cmd>lua vim.snippet.jump(%d)<CR>"):format(direction)
+    end
+    return key
+  end, { expr = true, desc = "Select completion item / snippet jump / " .. key })
+end
+select_or_jump("<Tab>", 1)
+select_or_jump("<S-Tab>", -1)
+vim.keymap.set("i", "<C-Space>", vim.lsp.completion.get, { desc = "LSP completion" })
+vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })
 
 local plugins = {
-  {
-    "saghen/blink.cmp",
-    dependencies = { "rafamadriz/friendly-snippets" },
-    version = "^1.0.0",
-    opts = {
-      keymap = {
-        ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
-        ["<C-e>"] = { "hide", "fallback" },
-
-        ["<Enter>"] = {
-          function(cmp)
-            if cmp.snippet_active() then
-              return cmp.accept()
-            else
-              return cmp.select_and_accept()
-            end
-          end,
-          "snippet_forward",
-          "fallback",
-        },
-        ["<Tab>"] = {
-          function(cmp)
-            if cmp.snippet_active() then
-              return cmp.accept()
-            else
-              return cmp.select_and_accept()
-            end
-          end,
-          "snippet_forward",
-          "fallback",
-        },
-        ["<S-Tab>"] = { "snippet_backward", "fallback" },
-
-        ["<Up>"] = { "select_prev", "fallback" },
-        ["<Down>"] = { "select_next", "fallback" },
-        ["<C-p>"] = { "select_prev", "fallback_to_mappings" },
-        ["<C-n>"] = { "select_next", "fallback_to_mappings" },
-
-        ["<C-b>"] = { "scroll_documentation_up", "fallback" },
-        ["<C-f>"] = { "scroll_documentation_down", "fallback" },
-
-        ["<C-k>"] = { "show_signature", "hide_signature", "fallback" },
-      },
-      signature = { enabled = true },
-      completion = {
-        documentation = { auto_show = false },
-        ghost_text = {
-          enabled = false,
-        },
-        menu = {
-          auto_show = true,
-        },
-      },
-      sources = {
-        default = {
-          "lsp",
-          "path",
-          -- "snippets",
-          -- 'buffer',
-        },
-      },
-      fuzzy = { implementation = "prefer_rust_with_warning" },
-    },
-    opts_extend = { "sources.default" },
-  },
-
   -- golang development
   {
     "ray-x/go.nvim",
@@ -120,6 +74,7 @@ local plugins = {
         enable_moveright = true,
         enable_afterquote = true,
         check_ts = true,
+        map_cr = false, -- <CR> is mapped above, it falls back to autopairs_cr()
         map_bs = true,
         map_c_h = false,
         map_c_w = false,
@@ -256,7 +211,8 @@ local plugins = {
             })
           end
         end,
-        capabilities = require("blink.cmp").get_lsp_capabilities({
+        -- merged over vim.lsp.protocol.make_client_capabilities() by the client
+        capabilities = {
           workspace = {
             -- Enable file watching capability for new/deleted files
             didChangeWatchedFiles = {
@@ -277,7 +233,7 @@ local plugins = {
               lineFoldingOnly = true,
             },
           },
-        }),
+        },
       })
 
       ---------------------------------- vue typescript
@@ -489,6 +445,24 @@ local plugins = {
         callback = function(event)
           local opts = { buffer = event.buf }
 
+          -- autotrigger only fires on the server's triggerCharacters ("." etc.); add word characters so the
+          -- menu opens while typing, like blink.cmp did
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          local provider = client and client.server_capabilities.completionProvider
+          if provider then
+            local chars = vim.split("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_", "")
+            provider.triggerCharacters = vim.list_extend(chars, provider.triggerCharacters or {})
+            vim.lsp.completion.enable(true, client.id, event.buf, {
+              autotrigger = true,
+              -- kind column: mini.icons glyph + kind name, colored per kind
+              convert = function(item)
+                local kind = vim.lsp.protocol.CompletionItemKind[item.kind] or "Text"
+                local icon, hl = require("mini.icons").get("lsp", kind)
+                return { kind = icon .. " " .. kind, kind_hlgroup = hl }
+              end,
+            })
+          end
+
           vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
           vim.keymap.set("n", "<leader>R", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
           vim.keymap.set("n", "<leader>a", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
@@ -659,7 +633,6 @@ local plugins = {
     "folke/trouble.nvim",
     version = "^3.0.0",
     dependencies = {
-      "nvim-tree/nvim-web-devicons",
       {
         "folke/todo-comments.nvim",
         version = "^1.0.0",
@@ -967,146 +940,20 @@ local plugins = {
   --     })
   --   end,
   -- },
-  -- colors/sonokai.lua is compiled, it needs no plugin at runtime. Its source is the lush spec in
-  -- lua/lush_theme/sonokai.lua: :Lushify in that buffer previews edits live, :Shipwright (run from this
-  -- directory) rebuilds colors/sonokai.lua from it via shipwright_build.lua.
-  { "rktjmp/lush.nvim", cmd = "Lushify" },
-  { "rktjmp/shipwright.nvim", cmd = "Shipwright", dependencies = { "rktjmp/lush.nvim" } },
-  -- colorscheme "terminal" (colors/terminal.lua, generated by ~/.dotfiles/bin/theme-sync) is built on
-  -- mini.base16; loaded on require so it stays selectable from the colorscheme picker
-  { "echasnovski/mini.base16", version = "^0.18.0", lazy = true },
-
-  -- colorschemes on trial: lazy, so they cost nothing at startup; the colorscheme picker (<leader>uC)
-  -- lists them and lazy.nvim loads a plugin when its colorscheme is picked. All transparent, like sonokai.
+  -- icons: LSP completion menu (convert in LspAttach), snacks picker, trouble and neo-tree. Loaded on require;
+  -- plugins that only know nvim-web-devicons get mini.icons' mock of it on their first require of that module.
   {
-    "loctvl842/monokai-pro.nvim",
+    "echasnovski/mini.icons",
+    version = "^0.18.0",
     lazy = true,
-    opts = { transparent_background = true, filter = "spectrum" },
-  },
-  { "catppuccin/nvim", name = "catppuccin", lazy = true, opts = { transparent_background = true } },
-  {
-    "folke/tokyonight.nvim",
-    lazy = true,
-    opts = {
-      transparent = true,
-      on_colors = function(c)
-        -- burgundy style: the active float border is derived from blue1 (types), use burgundy instead
-        if c.burgundy then
-          c.border_highlight = c.burgundy.border
-        end
-      end,
-    },
-    config = function(_, opts)
-      -- extra style "burgundy" (colors/tokyonight-burgundy.lua): night with a dark brown background, warm
-      -- greys and burgundy accents. Set as a palette, before tokyonight derives selection/search/diff from it.
-      -- Text accent #cc5a72 is the darkest burgundy with 4.5:1 contrast on the background; deep burgundy
-      -- #7a1f33 is only used as a background (search, selection).
-      require("tokyonight.colors").styles.burgundy = function()
-        return vim.tbl_deep_extend("force", vim.deepcopy(require("tokyonight.colors.night")), {
-          bg = "#1e1612",
-          bg_dark = "#18110e",
-          bg_dark1 = "#120c0a",
-          bg_highlight = "#2b211b", -- cursorline
-          blue = "#cc5a72",         -- main accent: functions, titles, directories
-          blue0 = "#7a1f33",        -- search, selection (blended)
-          blue7 = "#4a2630",        -- diff text, inlay hint background
-          fg_gutter = "#4a3a30",
-          dark3 = "#5e4c41",
-          dark5 = "#8f7d70",
-          comment = "#86746a",
-          terminal_black = "#4d3e34",
-          burgundy = { border = "#a8324a" },
-        })
+    opts = {},
+    init = function()
+      package.preload["nvim-web-devicons"] = function()
+        require("mini.icons").mock_nvim_web_devicons()
+        return package.loaded["nvim-web-devicons"]
       end
-      require("tokyonight").setup(opts)
     end,
   },
-  { "rebelot/kanagawa.nvim", lazy = true, opts = { transparent = true } },
-  {
-    -- main colorscheme: dayfox in the light macOS appearance, carbonfox in the dark one, switching while
-    -- running. Loaded first (priority) so other plugins set their default highlights on top of it.
-    "EdenEast/nightfox.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      -- transparent: the background comes from the terminal, so tmux can dim inactive panes
-      require("nightfox").setup({ options = { transparent = true } })
-
-      local schemes = { light = "dayfox", dark = "carbonfox" }
-      -- last seen appearance: startup applies it right away instead of waiting ~5 ms for `defaults read`,
-      -- the real one is checked asynchronously right after
-      local state_file = vim.fn.stdpath("state") .. "/appearance"
-      local f = io.open(state_file)
-      local mode = f and f:read("*l")
-      if f then
-        f:close()
-      end
-      mode = schemes[mode] and mode or "dark"
-      vim.cmd.colorscheme(schemes[mode])
-
-      if vim.fn.has("mac") == 0 then
-        return
-      end
-
-      local function check()
-        -- AppleInterfaceStyle is "Dark" in the dark appearance and missing (exit code 1) in the light one
-        vim.system({ "defaults", "read", "-g", "AppleInterfaceStyle" }, { text = true }, function(res)
-          local new = (res.stdout or ""):match("Dark") and "dark" or "light"
-          if new == mode then
-            return
-          end
-          mode = new
-          vim.schedule(function()
-            vim.cmd.colorscheme(schemes[mode])
-            local out = io.open(state_file, "w")
-            if out then
-              out:write(mode)
-              out:close()
-            end
-          end)
-        end)
-      end
-
-      -- nothing notifies a terminal app of appearance changes: poll (async, a ~5 ms `defaults` run every
-      -- 3 s) and check at once when the window gets focus back
-      local timer = assert(vim.uv.new_timer())
-      timer:start(0, 3000, check)
-      vim.api.nvim_create_autocmd("FocusGained", { callback = check })
-      vim.api.nvim_create_autocmd("VimLeavePre", {
-        callback = function()
-          timer:close()
-        end,
-      })
-    end,
-  },
-  { "rose-pine/neovim", name = "rose-pine", lazy = true, opts = { styles = { transparency = true } } },
-  -- {
-  --   "f-person/auto-dark-mode.nvim",
-  --   lazy = false,
-  --   priority = 1000,
-  --   opts = {
-  --     set_dark_mode = function()
-  --       vim.cmd("colorscheme nightfox")
-  --     end,
-  --     set_light_mode = function()
-  --       vim.cmd("colorscheme dayfox")
-  --     end,
-  --     update_interval = 3000,
-  --     fallback = "light",
-  --   },
-  -- },
-  -- {
-  --   "EdenEast/nightfox.nvim",
-  --   config = function()
-  --     require("nightfox").setup({
-  --       options = {
-  --         -- transparent = true,
-  --         terminal_colors = true,
-  --       },
-  --     })
-  --     vim.cmd("colorscheme nightfox")
-  --   end,
-  -- },
   -- {
   --   "akinsho/bufferline.nvim",
   --   version = "*",
@@ -1149,16 +996,10 @@ local plugins = {
     end,
   },
   {
-    "nvim-tree/nvim-web-devicons",
-    branch = "master",
-    lazy = true, -- loaded on require by neo-tree, trouble and the snacks picker
-  },
-  {
     "nvim-neo-tree/neo-tree.nvim",
     version = "^3.0.0",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
       "folke/snacks.nvim",
       {
@@ -1370,12 +1211,14 @@ local plugins = {
 }
 
 require("lazy").setup({
-  spec = plugins,
+  -- theme plugins (nightfox and the others) live in themes/
+  spec = { plugins, dofile(config_dir .. "/themes/plugins.lua") },
   change_detection = { enabled = false, notify = false },
   ui = { border = "single", title = "Lazy", title_pos = "left" },
   lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json", -- hide lockfile away
   performance = {
     rtp = {
+      paths = { config_dir .. "/themes" }, -- keep it after lazy.nvim resets 'runtimepath'
       disabled_plugins = {
         "osc52",
         "gzip",

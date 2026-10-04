@@ -1,6 +1,7 @@
--- Sonokai, compiled by shipwright (shipwright_build.lua) from the lush spec in
--- lua/lush_theme/sonokai.lua. Change colors there and run :Shipwright; the group table below is
--- overwritten on every build. Loading needs no plugin, only nvim_set_hl calls.
+-- Sonokai, compiled by shipwright (themes/shipwright_build.lua) from the lush spec in
+-- themes/lua/lush_theme/sonokai.lua. Change colors there and run :Shipwright themes/shipwright_build.lua
+-- (from ~/.config/nvim); the group table below is overwritten on every build. Loading needs no plugin,
+-- only nvim_set_hl calls.
 
 vim.cmd("highlight clear")
 vim.o.background = "dark"

@@ -3,7 +3,7 @@
 local config_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
 dofile(config_dir .. "/core.lua")
 
--- compiled colorscheme (colors/sonokai.lua), no plugin needed
+-- compiled colorscheme (themes/colors/sonokai.lua), no plugin needed
 vim.cmd.colorscheme("sonokai")
 
 local plugins = {
@@ -205,6 +205,7 @@ require("lazy").setup({
   lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json", -- hide lockfile away
   performance = {
     rtp = {
+      paths = { config_dir .. "/themes" }, -- keep it after lazy.nvim resets 'runtimepath'
       disabled_plugins = {
         "osc52",
         "gzip",
