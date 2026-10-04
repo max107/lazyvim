@@ -65,7 +65,6 @@ vim.opt.showmode = false
 -- into a "Press ENTER" prompt; W: drop the "[w]" suffix on write
 vim.opt.shortmess = "aoOtTIcFW"
 vim.opt.scrolloff = 2
-vim.opt.path:append({ "**" }) -- Finding files - Search down into subfolders
 vim.opt.sidescrolloff = 5
 vim.opt.ruler = false
 vim.opt.winwidth = 30
@@ -153,7 +152,10 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*",
   callback = function(args)
     if vim.bo[args.buf].filetype ~= "markdown" then
-      vim.cmd([[:%s/\s\+$//e]])
+      -- keep the last search pattern, jumplist and view intact
+      local view = vim.fn.winsaveview()
+      vim.cmd([[keeppatterns keepjumps %s/\s\+$//e]])
+      vim.fn.winrestview(view)
     end
   end,
 })
@@ -232,7 +234,11 @@ vim.filetype.add({
     -- #!/usr/sbin/nft -f, #!/usr/bin/env nft -f
     [".*"] = {
       function(_, bufnr)
-        local line = vim.filetype.getlines(bufnr, 1)
+        -- bufnr is nil when matching by filename only (e.g. snacks picker previews)
+        if not bufnr then
+          return
+        end
+        local line = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] or ""
         if line:match("^#!%S*/nft%f[%s%z]") or line:match("^#!%S*/env%s+nft%f[%s%z]") then
           return "nftables"
         end

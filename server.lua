@@ -3,6 +3,9 @@
 local config_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
 dofile(config_dir .. "/core.lua")
 
+-- compiled colorscheme (colors/sonokai.lua), no plugin needed
+vim.cmd.colorscheme("sonokai")
+
 local plugins = {
   { "nfnty/vim-nftables" },
   {
@@ -28,17 +31,6 @@ local plugins = {
     },
   },
   {
-    "sainnhe/sonokai",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      vim.cmd([[
-        let g:sonokai_transparent_background = 1
-        colorscheme sonokai
-      ]])
-    end,
-  },
-  {
     "alexghergh/nvim-tmux-navigation",
     config = function()
       local nvim_tmux_nav = require("nvim-tmux-navigation")
@@ -47,13 +39,14 @@ local plugins = {
         disable_when_zoomed = true,
       })
 
-      vim.keymap.set("n", "<C-h>", nvim_tmux_nav.NvimTmuxNavigateLeft)
-      vim.keymap.set("n", "<C-j>", nvim_tmux_nav.NvimTmuxNavigateDown)
-      vim.keymap.set("n", "<C-k>", nvim_tmux_nav.NvimTmuxNavigateUp)
-      vim.keymap.set("n", "<C-l>", nvim_tmux_nav.NvimTmuxNavigateRight)
       vim.keymap.set("n", "<C-\\>", nvim_tmux_nav.NvimTmuxNavigateLastActive)
       vim.keymap.set("n", "<C-Space>", nvim_tmux_nav.NvimTmuxNavigateNext)
-      -- C-w + arrow: like the built-in window keys, but continues into tmux panes
+      -- C-w + h/j/k/l or arrow: like the built-in window keys, but continues
+      -- into tmux panes
+      vim.keymap.set("n", "<C-w>h", nvim_tmux_nav.NvimTmuxNavigateLeft)
+      vim.keymap.set("n", "<C-w>j", nvim_tmux_nav.NvimTmuxNavigateDown)
+      vim.keymap.set("n", "<C-w>k", nvim_tmux_nav.NvimTmuxNavigateUp)
+      vim.keymap.set("n", "<C-w>l", nvim_tmux_nav.NvimTmuxNavigateRight)
       vim.keymap.set("n", "<C-w><Left>", nvim_tmux_nav.NvimTmuxNavigateLeft)
       vim.keymap.set("n", "<C-w><Down>", nvim_tmux_nav.NvimTmuxNavigateDown)
       vim.keymap.set("n", "<C-w><Up>", nvim_tmux_nav.NvimTmuxNavigateUp)

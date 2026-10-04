@@ -3,6 +3,15 @@
 local config_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
 dofile(config_dir .. "/core.lua")
 
+-- приглушённые направляющие отступов snacks.indent (обычные и текущий scope), для светлой и тёмной темы
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    local light = vim.o.background == "light"
+    vim.api.nvim_set_hl(0, "SnacksIndent", { fg = light and "#e4dcd4" or "#2c2c30" })
+    vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = light and "#d3c7bb" or "#4d4766" })
+  end,
+})
+
 local plugins = {
   {
     "saghen/blink.cmp",
@@ -94,7 +103,6 @@ local plugins = {
     --     group = format_sync_grp,
     --   })
     -- end,
-    event = { "CmdlineEnter" },
     ft = { "go", "gomod" },
     build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
   },
@@ -210,6 +218,15 @@ local plugins = {
       -- Softer alternative: keep them below treesitter instead of disabling:
       -- vim.hl.priorities.semantic_tokens = 95
       vim.lsp.semantic_tokens.enable(false)
+
+      -- Neovim never rotates lsp.log (it only warns past 1 GB). Rotate it here, before any server starts
+      -- and the log is opened: past 5 MB it becomes lsp.log.old (overwriting the previous one).
+      -- To turn LSP logging off entirely: vim.lsp.log.set_level(vim.log.levels.OFF)
+      local lsp_log = vim.lsp.log.get_filename()
+      local lsp_log_stat = vim.uv.fs_stat(lsp_log)
+      if lsp_log_stat and lsp_log_stat.size > 5 * 1024 * 1024 then
+        vim.uv.fs_rename(lsp_log, lsp_log .. ".old")
+      end
 
       -- projects where format on save is disabled
       local no_format_projects = {
@@ -363,7 +380,8 @@ local plugins = {
       })
 
       vim.lsp.config("tofu_ls", {
-        cmd = { "tofu-ls", "serve" },
+        -- tofu-ls logs every job to stderr, which Neovim copies into lsp.log at ERROR level (was ~99% of it)
+        cmd = { "tofu-ls", "serve", "-log-file", "/dev/null" },
         filetypes = { "opentofu", "opentofu-vars", "terraform", "terraform-vars" },
         root_markers = {
           ".terraform",
@@ -452,9 +470,8 @@ local plugins = {
         -- python
         "basedpyright",
 
-        -- terraform
-        "terraformls",
-        "tflint",
+        -- terraform: tofu_ls covers terraform filetypes and does its own validation.
+        -- terraformls and tflint are off: their binaries aren't installed (brew install tflint to bring it back).
         "tofu_ls",
 
         -- vscode language servers
@@ -567,6 +584,8 @@ local plugins = {
         "nftables",
         "nginx",
         "nix",
+        "php",
+        "phpdoc",
         "promql",
         "proto",
         "scss",
@@ -693,6 +712,7 @@ local plugins = {
       explorer = { enabled = false },
       indent = {
         enabled = true,
+        animate = { enabled = false },
       },
       input = { enabled = false },
       picker = {
@@ -711,9 +731,9 @@ local plugins = {
           file_pos = true,       -- support patterns like `file:line:col` and `file:line`
           -- the bonusses below, possibly require string concatenation and path normalization,
           -- so this can have a performance impact for large lists and increase memory usage
-          cwd_bonus = true,     -- give bonus for matching files in the cwd
-          frecency = true,      -- frecency bonus
-          history_bonus = true, -- give more weight to chronological order
+          cwd_bonus = false,     -- give bonus for matching files in the cwd
+          frecency = false,      -- frecency bonus
+          history_bonus = false, -- give more weight to chronological order
         },
       },
       notifier = { enabled = false },
@@ -726,7 +746,7 @@ local plugins = {
         left = { "mark", "sign" }, -- priority of signs on the left (high to low)
         right = { "fold" },        -- priority of signs on the right (high to low)
         folds = {
-          open = true,             -- show open fold icons
+          open = false,            -- open fold icons need a fold level lookup per line on every redraw
         },
         refresh = 50,              -- refresh at most every 50ms
       },
@@ -807,7 +827,15 @@ local plugins = {
       {
         "<leader>uC",
         function()
-          Snacks.picker.colorschemes()
+          Snacks.picker.colorschemes({
+            -- hide the colorschemes bundled with Neovim ($VIMRUNTIME/colors), and plugin ones shadowed by
+            -- them: :colorscheme prefers a .vim anywhere in rtp, so the plugin's catppuccin.lua would load
+            -- the bundled catppuccin.vim instead
+            transform = function(item)
+              local bundled = vim.env.VIMRUNTIME .. "/colors/"
+              return not vim.startswith(item.file, bundled) and vim.fn.filereadable(bundled .. item.text .. ".vim") == 0
+            end,
+          })
         end,
         desc = "Colorschemes",
       },
@@ -939,28 +967,119 @@ local plugins = {
   --     })
   --   end,
   -- },
+  -- colors/sonokai.lua is compiled, it needs no plugin at runtime. Its source is the lush spec in
+  -- lua/lush_theme/sonokai.lua: :Lushify in that buffer previews edits live, :Shipwright (run from this
+  -- directory) rebuilds colors/sonokai.lua from it via shipwright_build.lua.
+  { "rktjmp/lush.nvim", cmd = "Lushify" },
+  { "rktjmp/shipwright.nvim", cmd = "Shipwright", dependencies = { "rktjmp/lush.nvim" } },
+  -- colorscheme "terminal" (colors/terminal.lua, generated by ~/.dotfiles/bin/theme-sync) is built on
+  -- mini.base16; loaded on require so it stays selectable from the colorscheme picker
+  { "echasnovski/mini.base16", version = "^0.18.0", lazy = true },
+
+  -- colorschemes on trial: lazy, so they cost nothing at startup; the colorscheme picker (<leader>uC)
+  -- lists them and lazy.nvim loads a plugin when its colorscheme is picked. All transparent, like sonokai.
   {
-    "sainnhe/sonokai",
+    "loctvl842/monokai-pro.nvim",
+    lazy = true,
+    opts = { transparent_background = true, filter = "spectrum" },
+  },
+  { "catppuccin/nvim", name = "catppuccin", lazy = true, opts = { transparent_background = true } },
+  {
+    "folke/tokyonight.nvim",
+    lazy = true,
+    opts = {
+      transparent = true,
+      on_colors = function(c)
+        -- burgundy style: the active float border is derived from blue1 (types), use burgundy instead
+        if c.burgundy then
+          c.border_highlight = c.burgundy.border
+        end
+      end,
+    },
+    config = function(_, opts)
+      -- extra style "burgundy" (colors/tokyonight-burgundy.lua): night with a dark brown background, warm
+      -- greys and burgundy accents. Set as a palette, before tokyonight derives selection/search/diff from it.
+      -- Text accent #cc5a72 is the darkest burgundy with 4.5:1 contrast on the background; deep burgundy
+      -- #7a1f33 is only used as a background (search, selection).
+      require("tokyonight.colors").styles.burgundy = function()
+        return vim.tbl_deep_extend("force", vim.deepcopy(require("tokyonight.colors.night")), {
+          bg = "#1e1612",
+          bg_dark = "#18110e",
+          bg_dark1 = "#120c0a",
+          bg_highlight = "#2b211b", -- cursorline
+          blue = "#cc5a72",         -- main accent: functions, titles, directories
+          blue0 = "#7a1f33",        -- search, selection (blended)
+          blue7 = "#4a2630",        -- diff text, inlay hint background
+          fg_gutter = "#4a3a30",
+          dark3 = "#5e4c41",
+          dark5 = "#8f7d70",
+          comment = "#86746a",
+          terminal_black = "#4d3e34",
+          burgundy = { border = "#a8324a" },
+        })
+      end
+      require("tokyonight").setup(opts)
+    end,
+  },
+  { "rebelot/kanagawa.nvim", lazy = true, opts = { transparent = true } },
+  {
+    -- main colorscheme: dayfox in the light macOS appearance, carbonfox in the dark one, switching while
+    -- running. Loaded first (priority) so other plugins set their default highlights on top of it.
+    "EdenEast/nightfox.nvim",
     lazy = false,
     priority = 1000,
     config = function()
-      -- приглушённые направляющие отступов snacks.indent (обычные и текущий scope)
-      vim.api.nvim_create_autocmd("ColorScheme", {
+      -- transparent: the background comes from the terminal, so tmux can dim inactive panes
+      require("nightfox").setup({ options = { transparent = true } })
+
+      local schemes = { light = "dayfox", dark = "carbonfox" }
+      -- last seen appearance: startup applies it right away instead of waiting ~5 ms for `defaults read`,
+      -- the real one is checked asynchronously right after
+      local state_file = vim.fn.stdpath("state") .. "/appearance"
+      local f = io.open(state_file)
+      local mode = f and f:read("*l")
+      if f then
+        f:close()
+      end
+      mode = schemes[mode] and mode or "dark"
+      vim.cmd.colorscheme(schemes[mode])
+
+      if vim.fn.has("mac") == 0 then
+        return
+      end
+
+      local function check()
+        -- AppleInterfaceStyle is "Dark" in the dark appearance and missing (exit code 1) in the light one
+        vim.system({ "defaults", "read", "-g", "AppleInterfaceStyle" }, { text = true }, function(res)
+          local new = (res.stdout or ""):match("Dark") and "dark" or "light"
+          if new == mode then
+            return
+          end
+          mode = new
+          vim.schedule(function()
+            vim.cmd.colorscheme(schemes[mode])
+            local out = io.open(state_file, "w")
+            if out then
+              out:write(mode)
+              out:close()
+            end
+          end)
+        end)
+      end
+
+      -- nothing notifies a terminal app of appearance changes: poll (async, a ~5 ms `defaults` run every
+      -- 3 s) and check at once when the window gets focus back
+      local timer = assert(vim.uv.new_timer())
+      timer:start(0, 3000, check)
+      vim.api.nvim_create_autocmd("FocusGained", { callback = check })
+      vim.api.nvim_create_autocmd("VimLeavePre", {
         callback = function()
-          vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#2c2c30" })
-          vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = "#4d4766" })
+          timer:close()
         end,
       })
-      vim.cmd([[
-        let g:sonokai_transparent_background = 1
-        colorscheme sonokai
-      ]])
     end,
   },
-  -- colorscheme "terminal" (colors/terminal.lua, generated by
-  -- ~/.dotfiles/bin/theme-sync) is built on mini.base16; loaded on demand so
-  -- it stays selectable from the colorscheme picker
-  -- { "echasnovski/mini.base16", lazy = true },
+  { "rose-pine/neovim", name = "rose-pine", lazy = true, opts = { styles = { transparency = true } } },
   -- {
   --   "f-person/auto-dark-mode.nvim",
   --   lazy = false,
@@ -1004,29 +1123,35 @@ local plugins = {
   -- },
   {
     "alexghergh/nvim-tmux-navigation",
-    config = function()
-      local nvim_tmux_nav = require("nvim-tmux-navigation")
-
-      nvim_tmux_nav.setup({
-        disable_when_zoomed = true,
-      })
-
-      vim.keymap.set("n", "<C-h>", nvim_tmux_nav.NvimTmuxNavigateLeft)
-      vim.keymap.set("n", "<C-j>", nvim_tmux_nav.NvimTmuxNavigateDown)
-      vim.keymap.set("n", "<C-k>", nvim_tmux_nav.NvimTmuxNavigateUp)
-      vim.keymap.set("n", "<C-l>", nvim_tmux_nav.NvimTmuxNavigateRight)
-      vim.keymap.set("n", "<C-\\>", nvim_tmux_nav.NvimTmuxNavigateLastActive)
-      vim.keymap.set("n", "<C-Space>", nvim_tmux_nav.NvimTmuxNavigateNext)
-      -- C-w + arrow: like the built-in window keys, but continues into tmux panes
-      vim.keymap.set("n", "<C-w><Left>", nvim_tmux_nav.NvimTmuxNavigateLeft)
-      vim.keymap.set("n", "<C-w><Down>", nvim_tmux_nav.NvimTmuxNavigateDown)
-      vim.keymap.set("n", "<C-w><Up>", nvim_tmux_nav.NvimTmuxNavigateUp)
-      vim.keymap.set("n", "<C-w><Right>", nvim_tmux_nav.NvimTmuxNavigateRight)
+    opts = {
+      disable_when_zoomed = true,
+    },
+    keys = function()
+      local function nav(direction)
+        return function()
+          require("nvim-tmux-navigation")["NvimTmuxNavigate" .. direction]()
+        end
+      end
+      return {
+        { "<C-\\>",      nav("LastActive") },
+        { "<C-Space>",   nav("Next") },
+        -- C-w + h/j/k/l or arrow: like the built-in window keys, but continues
+        -- into tmux panes
+        { "<C-w>h",       nav("Left") },
+        { "<C-w>j",       nav("Down") },
+        { "<C-w>k",       nav("Up") },
+        { "<C-w>l",       nav("Right") },
+        { "<C-w><Left>",  nav("Left") },
+        { "<C-w><Down>",  nav("Down") },
+        { "<C-w><Up>",    nav("Up") },
+        { "<C-w><Right>", nav("Right") },
+      }
     end,
   },
   {
     "nvim-tree/nvim-web-devicons",
     branch = "master",
+    lazy = true, -- loaded on require by neo-tree, trouble and the snacks picker
   },
   {
     "nvim-neo-tree/neo-tree.nvim",
@@ -1051,10 +1176,31 @@ local plugins = {
         },
       },
     },
-    config = function()
+    cmd = "Neotree",
+    keys = {
+      { "<C-n>", "<cmd>Neotree filesystem reveal toggle current<CR>", silent = true },
+      { "<C-g>", "<cmd>Neotree git_status toggle current<CR>",       silent = true },
+    },
+    init = function()
       vim.g.loaded_netrwPlugin = 1
       vim.g.loaded_netrw = 1
 
+      -- lazy-loaded, so `nvim <dir>` has to load it explicitly for hijack_netrw_behavior to take over
+      vim.api.nvim_create_autocmd("BufEnter", {
+        group = vim.api.nvim_create_augroup("NeotreeStartDirectory", { clear = true }),
+        once = true,
+        callback = function()
+          if package.loaded["neo-tree"] then
+            return
+          end
+          local stats = vim.uv.fs_stat(vim.fn.argv(0))
+          if stats and stats.type == "directory" then
+            require("neo-tree")
+          end
+        end,
+      })
+    end,
+    config = function()
       require("neo-tree").setup({
         close_if_last_window = true,
         use_default_mappings = false,
@@ -1160,11 +1306,6 @@ local plugins = {
         },
         buffers = {},
       })
-
-      local opts = { noremap = true, silent = true }
-
-      vim.api.nvim_set_keymap("n", "<C-n>", "<cmd>Neotree filesystem reveal toggle current<CR>", opts)
-      vim.api.nvim_set_keymap("n", "<C-g>", "<cmd>Neotree git_status toggle current<CR>", opts)
     end,
   },
   {
