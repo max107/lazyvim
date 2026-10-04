@@ -786,7 +786,16 @@ local plugins = {
       {
         "<leader>g",
         function()
-          Snacks.picker.grep()
+          -- .terraform is gitignored and hidden: pass it to rg as an explicit path
+          -- so it is searched anyway, but skip the large provider binaries
+          if vim.fn.isdirectory(".terraform") == 1 then
+            Snacks.picker.grep({
+              dirs = { ".", ".terraform" },
+              exclude = { ".terraform/providers" },
+            })
+          else
+            Snacks.picker.grep()
+          end
         end,
         desc = "Grep",
       },
