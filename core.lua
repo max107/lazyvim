@@ -16,7 +16,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 vim.opt.rtp:prepend(lazypath)
--- colorschemes and everything around them (themes/plugins.lua)
+-- the colorscheme and everything around it (themes/plugins.lua)
 vim.opt.rtp:append(vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h") .. "/themes")
 
 vim.g.mapleader = " "

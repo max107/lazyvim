@@ -29,6 +29,8 @@ local function select_or_jump(key, direction)
 end
 select_or_jump("<Tab>", 1)
 select_or_jump("<S-Tab>", -1)
+-- border around the completion menu, like every other float (winborder)
+vim.o.pumborder = "single"
 vim.keymap.set("i", "<C-Space>", vim.lsp.completion.get, { desc = "LSP completion" })
 vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })
 
@@ -802,8 +804,7 @@ local plugins = {
         function()
           Snacks.picker.colorschemes({
             -- hide the colorschemes bundled with Neovim ($VIMRUNTIME/colors), and plugin ones shadowed by
-            -- them: :colorscheme prefers a .vim anywhere in rtp, so the plugin's catppuccin.lua would load
-            -- the bundled catppuccin.vim instead
+            -- them: :colorscheme prefers a .vim anywhere in rtp
             transform = function(item)
               local bundled = vim.env.VIMRUNTIME .. "/colors/"
               return not vim.startswith(item.file, bundled) and vim.fn.filereadable(bundled .. item.text .. ".vim") == 0
@@ -1014,6 +1015,11 @@ local plugins = {
               buftype = { "terminal", "quickfix" },
             },
           },
+          -- hint colors from the colorscheme instead of the plugin's own red/green
+          highlights = {
+            statusline = { focused = "IncSearch", unfocused = "Search" },
+            winbar = { focused = "IncSearch", unfocused = "Search" },
+          },
         },
       },
     },
@@ -1211,7 +1217,7 @@ local plugins = {
 }
 
 require("lazy").setup({
-  -- theme plugins (nightfox and the others) live in themes/
+  -- the colorscheme and its plugin live in themes/
   spec = { plugins, dofile(config_dir .. "/themes/plugins.lua") },
   change_detection = { enabled = false, notify = false },
   ui = { border = "single", title = "Lazy", title_pos = "left" },

@@ -3,9 +3,6 @@
 local config_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
 dofile(config_dir .. "/core.lua")
 
--- compiled colorscheme (themes/colors/sonokai.lua), no plugin needed
-vim.cmd.colorscheme("sonokai")
-
 local plugins = {
   { "nfnty/vim-nftables" },
   {
@@ -199,7 +196,8 @@ local plugins = {
 }
 
 require("lazy").setup({
-  spec = plugins,
+  -- the colorscheme and its plugin live in themes/, shared with init.lua
+  spec = { plugins, dofile(config_dir .. "/themes/plugins.lua") },
   change_detection = { enabled = false, notify = false },
   ui = { border = "single", title = "Lazy", title_pos = "left" },
   lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json", -- hide lockfile away
