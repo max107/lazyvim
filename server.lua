@@ -16,18 +16,6 @@ local plugins = {
     end,
   },
   {
-    "echasnovski/mini.comment",
-    version = "*",
-    opts = {
-      mappings = {
-        comment = "",
-        comment_line = "gc",
-        comment_visual = "gc",
-        textobject = "gc",
-      },
-    },
-  },
-  {
     "alexghergh/nvim-tmux-navigation",
     config = function()
       local nvim_tmux_nav = require("nvim-tmux-navigation")

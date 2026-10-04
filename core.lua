@@ -98,8 +98,11 @@ vim.opt.winborder = "single"
 vim.opt.foldlevel = 99
 vim.opt.foldnestmax = 4
 
+-- built-in commenting: gc in Normal mode toggles the current line (the default gcc, which is dropped);
+-- in Visual mode gc stays an operator, in Operator-pending mode a text object
+local comment_line = vim.fn.maparg("gcc", "n", false, true).callback
 vim.keymap.del("n", "gcc")
-vim.keymap.del("n", "gc")
+vim.keymap.set("n", "gc", comment_line, { expr = true, desc = "Toggle comment line" })
 
 vim.diagnostic.config({
   signs = false,

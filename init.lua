@@ -105,12 +105,6 @@ local plugins = {
     version = "^2.0.0",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      {
-        -- small lsp progress plugin
-        "j-hui/fidget.nvim",
-        version = "^2.0.0",
-        opts = {},
-      },
       -- {
       --   -- code formatting tool
       --   "stevearc/conform.nvim",
@@ -447,6 +441,23 @@ local plugins = {
         "intelephense"
       })
 
+      -- LSP progress as native progress messages: shown in the bottom-right message window (ui2, top of this
+      -- file) and as the terminal's progress bar (OSC 9;4); one message per server task, updated in place
+      vim.api.nvim_create_autocmd("LspProgress", {
+        callback = function(ev)
+          local value = ev.data.params.value
+          local client = vim.lsp.get_client_by_id(ev.data.client_id)
+          vim.api.nvim_echo({ { value.message or (value.kind == "end" and "done" or "") } }, false, {
+            id = ("lsp.%d.%s"):format(ev.data.client_id, ev.data.params.token),
+            kind = "progress",
+            source = "vim.lsp",
+            title = ("%s: %s"):format(client and client.name or "lsp", value.title or ""),
+            status = value.kind == "end" and "success" or "running",
+            percent = value.percentage,
+          })
+        end,
+      })
+
       vim.api.nvim_create_autocmd("LspAttach", {
         desc = "LSP actions",
         callback = function(event)
@@ -482,20 +493,6 @@ local plugins = {
         end,
       })
     end,
-  },
-
-  {
-    "echasnovski/mini.comment",
-    event = "BufWinEnter",
-    version = "^0.18.0",
-    opts = {
-      mappings = {
-        comment = "",
-        comment_line = "gc",
-        comment_visual = "gc",
-        textobject = "gc",
-      },
-    },
   },
 
   {
