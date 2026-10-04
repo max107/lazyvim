@@ -3,6 +3,11 @@
 local config_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
 dofile(config_dir .. "/core.lua")
 
+-- ui2 (experimental in 0.12): the redesigned messages/cmdline UI, no "Press ENTER" prompts. Progress
+-- messages (LSP progress, see LspProgress below) go to its message window in the bottom-right corner,
+-- everything else stays in the cmdline.
+require("vim._core.ui2").enable({ msg = { targets = { progress = "msg" } } })
+
 -- Native completion (vim.lsp.completion, enabled per buffer on LspAttach below). <C-y> accepts the selected
 -- item and applies its LSP side effects (snippet expansion, auto-imports).
 -- <Tab>/<S-Tab> move down/up the menu, <CR> accepts the selected item (the first one if none is selected).
