@@ -1240,7 +1240,6 @@ require("lazy").setup({
         "osc52",
         "gzip",
         "matchit",
-        "matchparen",
         "netrwPlugin",
         "tarPlugin",
         "tohtml",
